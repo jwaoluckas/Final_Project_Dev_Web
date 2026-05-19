@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-family: 'Montserrat', sans-serif;
+}
+
+header{
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    height: 10vh;
+    width: 100vw;
+    flex-direction: column;
+    background-color: white;
+    color: #2F9E41;
+    border-bottom: 1.5vh solid #2F9E41;
+}
+
+header img{
+    height: 8vh;
+    position: absolute;
+    left: 20px;
+}
+
+header h1{
+    font-weight: 700;
+}
+
+main{
+    font-weight: 300;
+}
+
+.campo_login_senha{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 2.5vh;
+    position: relative;
+    top: 25vh;
+}
+
+div{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.campo_email, .campo_senha{
+    align-items: flex-start;
+    color: #2F9E41;
+}
+
+div input{
+    width: 20vw;
+    border-style: solid;
+    border-radius: 5px;
+    border-color: #2F9E41;
+}
+
+button{
+    padding: 0 1vw;
+    border-style: none;
+    border-radius: 5px;
+    font-size: 25px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    background-color: #2F9E41;
+    color: white;
+    transition: 0.3s;
+}
+
+button:hover{
+    transform: scale(1.1);
+    box-shadow: -4px 4px 2px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+}
+
+a{
+    color: #2F9E41;
+    font-size: 12.5px;
+}
+
+#campo_aviso{
+    color: #CD191E;
+}
