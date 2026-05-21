@@ -1,9 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="script/script.js" defer></script>
     <link rel="stylesheet" href="style/header.css">
+    <link rel="stylesheet" href="style/main.css">
+    <link rel="stylesheet" href="style/campo_config_curso.css">
+    <link rel="stylesheet" href="style/campo_config_periodo.css">
     <title>Gerador de PPCs</title>
 </head>
 
@@ -13,7 +17,31 @@
     </header>
 
     <main>
-        
+        <div class="campo_config_curso">
+            <label for="escolha_formacao">Escolha a natureza do curso:</label>
+            <select id="escolha_formacao" name="escolha_formacao">
+                <option value="" disabled selected>Selecione</option>
+
+                <option value="bacharelado">Bacharelado</option>
+                <option value="tecnologo">Tecnólogo</option>
+                <option value="licenciatura">Licenciatura</option>
+            </select>
+
+            <label for="escolha_curso">Escolha um curso:</label>
+            <select id="escolha_curso" name="escolha_curso" required disabled>
+                <option value="" disabled selected>Selecione</option>
+
+            </select>
+
+            <label for="escolha_tempo">Escolha a quantidade de períodos:</label>
+            <input type="number" id="escolha_tempo" placeholder="Selecione a quantidade de períodos:">
+
+            <button type="submit" id="botao_prox_etapa1" name="botao_prox_etapa1">PRÓXIMA ETAPA</button>
+        </div>
+
+        <div class="campo_config_periodo">
+            
+        </div>
     </main>
 </body>
 </html>
