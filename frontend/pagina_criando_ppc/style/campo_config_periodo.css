@@ -7,11 +7,11 @@
 }
 
 .campo_config_periodo{
-    display: flex;
+    display: none;
     
     justify-content: center;
     flex-direction: column;
-    padding: 1vw 10vw;
+    padding: 2vh 10vw;
     background-color: ghostwhite;
     color: #2F9E41;
     font-weight: 500;
@@ -22,24 +22,21 @@
     box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.3);
 }
 
-.campo_config_periodo label{
+.campo_config_periodo div[class^="periodo_"]{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.campo_config_periodo div[class^="periodo_"] label{
     font-size: 25px;
     font-weight: 600;
     margin-top: 1vh;
 }
 
-.campo_config_periodo select{
+.campo_config_periodo div[class^="periodo_"] select{
     width: 25vw;
     margin-bottom: 1vh;
-    background-color: transparent;
-    border: #2F9E41 solid 1px;
-    border-radius: 2.5px;
-}
-
-.campo_config_periodo input{
-    width: 25vw;
-    height: 3vh;
-    margin-bottom: 2vh;
     background-color: transparent;
     border: #2F9E41 solid 1px;
     border-radius: 2.5px;
@@ -70,4 +67,15 @@ button:hover{
     font-size: 10px;
     font-weight: 500;
     border-radius: 5px;
+}
+
+.botoes{
+    margin-top: 5vh;
+    display: flex;
+    justify-content: space-between;
+}
+
+.botoes button{
+    font-size: 20px;
+    font-weight: 700;
 }
