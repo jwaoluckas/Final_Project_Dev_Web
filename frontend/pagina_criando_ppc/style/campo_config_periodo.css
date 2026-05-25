@@ -34,8 +34,31 @@
     margin-top: 1vh;
 }
 
-.campo_config_periodo div[class^="periodo_"] select{
+.campo_config_periodo div[class^="periodo_"] #escolha_disciplina{
     width: 25vw;
+    margin-bottom: 1vh;
+    background-color: transparent;
+    border: #2F9E41 solid 1px;
+    border-radius: 2.5px;
+}
+
+#div_linha_periodo{
+    display: flex;
+    justify-content: space-between;
+    gap: 1vw;
+    width: 30vw;
+}
+
+.campo_config_periodo div[class^="periodo_"] #escolha_qtd_horas{
+    width: 5vw;
+    margin-bottom: 1vh;
+    background-color: transparent;
+    border: #2F9E41 solid 1px;
+    border-radius: 2.5px;
+}
+
+.campo_config_periodo div[class^="periodo_"] #escolha_prerequisito{
+    width: 20vw;
     margin-bottom: 1vh;
     background-color: transparent;
     border: #2F9E41 solid 1px;

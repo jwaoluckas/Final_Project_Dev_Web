@@ -95,16 +95,29 @@ botao_prox_etapa.addEventListener('click', (evento) =>{
         div_periodo_atual.appendChild(nome_periodo);
 
        for(let n = 0; n < 3; n++){
-        const campo_escolha_disciplina = document.createElement('select');
+        const div_linha_periodo = document.createElement('div');
+        div_linha_periodo.id = 'div_linha_periodo';
+
+        const campo_escolha_disciplina = document.createElement('input');
         campo_escolha_disciplina.id = 'escolha_disciplina';
         campo_escolha_disciplina.name = 'escolha_disciplina';
+        campo_escolha_disciplina.placeholder = 'Digite o nome da disciplina:';
 
-        const opcao_nula = document.createElement('option');
-        opcao_nula.value = '';
-        opcao_nula.innerText = 'Selecione';
+        const campo_escolha_qtd_horas = document.createElement('input');
+        campo_escolha_qtd_horas.type = 'number';
+        campo_escolha_qtd_horas.id = 'escolha_qtd_horas';
+        campo_escolha_qtd_horas.name = 'escolha_qtd_horas';
+        campo_escolha_qtd_horas.placeholder = 'Horas:';
 
-        campo_escolha_disciplina.appendChild(opcao_nula);
-        div_periodo_atual.appendChild(campo_escolha_disciplina);
+        const campo_escolha_prerequisito = document.createElement('select');
+        campo_escolha_prerequisito.id = 'escolha_prerequisito';
+        campo_escolha_prerequisito.name = 'escolha_prerequisito';
+        campo_escolha_prerequisito.placeholder = 'Digite o nome da pré-requisito:';
+
+        div_linha_periodo.appendChild(campo_escolha_disciplina);
+        div_linha_periodo.appendChild(campo_escolha_qtd_horas);
+        div_linha_periodo.appendChild(campo_escolha_prerequisito);
+        div_periodo_atual.appendChild(div_linha_periodo);
        }
 
         const adicionar_disciplina = document.createElement('button');
@@ -117,16 +130,30 @@ botao_prox_etapa.addEventListener('click', (evento) =>{
         adicionar_disciplina.addEventListener('click', (evento_add_disciplina) =>{
             evento_add_disciplina.preventDefault();
 
-            const campo_escolha_disciplina = document.createElement('select');
+            const div_linha_periodo = document.createElement('div');
+            div_linha_periodo.id = 'div_linha_periodo';
+
+            const campo_escolha_disciplina = document.createElement('input');
             campo_escolha_disciplina.id = 'escolha_disciplina';
             campo_escolha_disciplina.name = 'escolha_disciplina';
+            campo_escolha_disciplina.placeholder = 'Digite o nome da disciplina:';
 
-            const opcao_nula = document.createElement('option');
-            opcao_nula.value = '';
-            opcao_nula.innerText = 'Selecione';
+            const campo_escolha_qtd_horas = document.createElement('input');
+            campo_escolha_qtd_horas.type = 'number';
+            campo_escolha_qtd_horas.id = 'escolha_qtd_horas';
+            campo_escolha_qtd_horas.name = 'escolha_qtd_horas';
+            campo_escolha_qtd_horas.placeholder = 'Horas:';
 
-            campo_escolha_disciplina.appendChild(opcao_nula);
-            div_periodo_atual.insertBefore(campo_escolha_disciplina, adicionar_disciplina);       
+            const campo_escolha_prerequisito = document.createElement('select');
+            campo_escolha_prerequisito.id = 'escolha_prerequisito';
+            campo_escolha_prerequisito.name = 'escolha_prerequisito';
+            campo_escolha_prerequisito.placeholder = 'Digite o nome da pré-requisito:';
+
+            div_linha_periodo.appendChild(campo_escolha_disciplina);
+            div_linha_periodo.appendChild(campo_escolha_qtd_horas);
+            div_linha_periodo.appendChild(campo_escolha_prerequisito);
+
+            div_periodo_atual.insertBefore(div_linha_periodo, adicionar_disciplina);       
        });
 
        div_campo_config_periodo.insertBefore(div_periodo_atual, botoes_confirmar_vizuPDF);
@@ -134,7 +161,6 @@ botao_prox_etapa.addEventListener('click', (evento) =>{
 });
 
 const botao_confirmar = document.getElementById('confirmar_ppc');
-const botao_vizualizar_pdf = document.getElementById('vizualizar_pdf');
 
 botao_confirmar.addEventListener('click', (evento) =>{
     evento.preventDefault();
@@ -152,53 +178,4 @@ botao_confirmar.addEventListener('click', (evento) =>{
     localStorage.setItem('ppc_temporario', JSON.stringify(dados_ppc));
 
     window.location.href = '../pagina_criar_editar_ppcs/criar_editar_ppcs.html';
-});
-
-botao_vizualizar_pdf.addEventListener('click', async (evento) =>{
-    evento.preventDefault();
-
-    const formacao_escolhida = document.getElementById('escolha_formacao');
-    const nome_curso = formacao_escolhida.options[formacao_escolhida.selectedIndex].text;
-    const qtd_periodos = document.getElementById('escolha_tempo').value;
-
-    const dados_para_pdf = {
-        natureza: nome_curso,
-        periodos: qtd_periodos,
-        // O Back-End precisará também da lista de disciplinas escolhidas (a implementar depois)
-    };
-
-    // ESTRUTURA PARA O BACK-END (Geração de PDF)
-    // O Back-End vai usar este bloco para receber os dados do formulário,
-    // montar o PDF no servidor e devolver o arquivo binário (Blob) para o navegador.
-    
-    /*
-    try {
-        // Muda o texto do botão para dar um feedback visual de carregamento
-        botao_vizualizar_pdf.innerText = 'GERANDO PDF...';
-        botao_vizualizar_pdf.disabled = true;
-
-        const resposta = await fetch('URL_DA_API/gerar-pdf-ppc', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(dados_para_pdf)
-        });
-
-        // Transforma a resposta do servidor num "Blob" (um pacote de arquivo bruto)
-        const arquivo_pdf = await resposta.blob();
-
-        // Cria uma URL local e temporária no navegador para esse pacote
-        const url_do_pdf = URL.createObjectURL(arquivo_pdf);
-
-        // Abre essa URL numa nova aba! (O navegador entende que é um PDF e mostra o visualizador nativo)
-        window.open(url_do_pdf, '_blank');
-
-    } catch (erro) {
-        console.error("Erro ao gerar o PDF:", erro);
-        alert("Ocorreu um erro ao tentar gerar o documento. Tente novamente.");
-    } finally {
-        // Devolve o botão ao estado normal
-        botao_vizualizar_pdf.innerText = 'VIZUALIZAR PDF';
-        botao_vizualizar_pdf.disabled = false;
-    }
-    */
 });

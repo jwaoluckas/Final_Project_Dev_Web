@@ -16,12 +16,23 @@ document.addEventListener('DOMContentLoaded', () =>{
         <p>Criado em ${dados_ppc.data}</p>
         `;
 
+        const div_botoes = document.createElement('div');
+        div_botoes.id = 'div_botoes';
+
         const botao_editar = document.createElement('button');
         botao_editar.id = 'botao_editar';
         botao_editar.type = 'submit';
         botao_editar.innerText = 'EDITAR';
 
-        card_ppc.appendChild(botao_editar);
+        const botao_visualizarpdf = document.createElement('button');
+        botao_visualizarpdf.id = 'botao_visualizarpdf';
+        botao_visualizarpdf.type = 'submit';
+        botao_visualizarpdf.innerText = 'VISUALIZAR PDF';
+
+
+        div_botoes.appendChild(botao_editar);
+        div_botoes.appendChild(botao_visualizarpdf)
+        card_ppc.appendChild(div_botoes);
         espaco_cards_ppcs.appendChild(card_ppc);
         main.insertBefore(espaco_cards_ppcs, botao_criar_ppc);
 
