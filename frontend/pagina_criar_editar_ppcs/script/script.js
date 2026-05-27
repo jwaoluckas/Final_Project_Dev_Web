@@ -1,8 +1,53 @@
 const main = document.querySelector('main');
 const espaco_cards_ppcs = document.querySelector('.espaco_cards_ppcs');
 const botao_criar_ppc = document.querySelector('.criar_ppc');
+const link_sair = document.querySelector('header a');
 
-document.addEventListener('DOMContentLoaded', () =>{
+// Protecao da pagina: valida o JWT no back-end antes de permitir o uso da area interna.
+async function validar_autenticacao() {
+    const token = localStorage.getItem('auth_token');
+
+    if(!token){
+        window.location.href = '../index.html';
+        return false;
+    }
+
+    try {
+        const resposta = await fetch('http://localhost:3000/api/auth/me', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        if(!resposta.ok){
+            localStorage.removeItem('auth_token');
+            window.location.href = '../index.html';
+            return false;
+        }
+
+        return true;
+    } catch (erro) {
+        console.error('Erro ao validar autenticacao:', erro);
+        localStorage.removeItem('auth_token');
+        window.location.href = '../index.html';
+        return false;
+    }
+}
+
+// Logout implementado: remove o JWT salvo no navegador antes de voltar para a tela de login.
+link_sair.addEventListener('click', (evento) =>{
+    evento.preventDefault();
+    localStorage.removeItem('auth_token');
+    window.location.href = '../index.html';
+});
+
+document.addEventListener('DOMContentLoaded', async () =>{
+    const usuario_autenticado = await validar_autenticacao();
+
+    if(!usuario_autenticado){
+        return;
+    }
+
     const ppc_salvo = localStorage.getItem('ppc_temporario');
 
     if(ppc_salvo){
@@ -39,38 +84,8 @@ document.addEventListener('DOMContentLoaded', () =>{
         botao_editar.addEventListener('click', (evento) =>{
             evento.preventDefault();
 
-            // ESTRUTURA PARA O BACK-END (Carregar PPC existente)
-            // O Back-End vai usar este bloco para buscar os dados de um PPC 
-            // específico no banco de dados antes de abrir a tela de edição.
-            
-            /*
-            try {
-                // 1. O Front-End precisa saber qual é o ID do PPC que o utilizador clicou.
-                // Geralmente, guardamos esse ID num atributo invisível no próprio HTML do card (ex: data-id="45")
-                const id_do_ppc_clicado = 45; // Exemplo fixo, mas será dinâmico!
-                
-                // 2. Pedimos à API para nos devolver os dados apenas desse PPC
-                const resposta = await fetch(`URL_DA_API/ppcs/${id_do_ppc_clicado}`);
-                const dados_do_ppc_banco = await resposta.json();
-
-                // 3. Salvamos esses dados no localStorage para a página de edição conseguir ler e preencher as caixas
-                localStorage.setItem('ppc_em_edicao', JSON.stringify(dados_do_ppc_banco));
-
-                // 4. Redirecionamos para a tela de criar/editar (onde o código de lá vai ler o localStorage e preencher os selects)
-                window.location.href = '../pagina_criando_ppc/criando_ppc.html';
-
-            } catch (erro) {
-                console.error("Erro ao buscar os dados do PPC para edição:", erro);
-                alert("Não foi possível carregar este PPC no momento.");
-            }
-            */
-
-            // SIMULAÇÃO FRONT-END (Para você testar agora)
-            
-            alert("Simulação: Aqui o sistema carregaria os dados do banco e levaria você para a tela de edição com as caixas já preenchidas!");
-            
-            // Se quiser simular o redirecionamento:
-            // window.location.href = '../pagina_criando_ppc/criando_ppc.html';
+            // Simulacao mantida: futuramente este ponto buscara o PPC no back-end antes de editar.
+            alert("Simulacao: Aqui o sistema carregaria os dados do banco e levaria voce para a tela de edicao com as caixas ja preenchidas!");
         });
     }
 });

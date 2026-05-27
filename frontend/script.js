@@ -19,40 +19,25 @@ form.addEventListener('submit', async (evento) =>{
     const email_digitado = document.querySelector('input[name="email_usuario"]').value;
     const senha_digitada = document.querySelector('input[name="senha_usuario"]').value;
 
-    // ESTRUTURA PARA O BACK-END (O que os caras do BD vão usar)
-    // Quando o Back-End estiver pronto, eles vão descomentar o código abaixo 
-    // e trocar a 'URL_DA_API' pelo endereço real do servidor deles.
-    
-    /*
+    // Autenticacao implementada via back-end: envia e-mail e senha para a API e salva o JWT retornado.
     try {
-        const resposta = await fetch('URL_DA_API/login', {
+        const resposta = await fetch('http://localhost:3000/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: emailDigitado, senha: senhaDigitada })
+            body: JSON.stringify({ email: email_digitado, senha: senha_digitada })
         });
 
         const dados = await resposta.json();
 
-        if(dados.autorizado === true) {
-            // Se o BD disser que a senha está certa, redireciona:
-            window.location.href = "pagina_principal.html"; 
-        } else {
-            alert("Email ou senha incorretos!");
+        if(!resposta.ok){
+            alert(dados.message || 'E-mail ou senha invalidos.');
+            return;
         }
-    } catch (erro) {
-        console.error("Erro ao conectar com o banco de dados:", erro);
-    }
-    */
 
-    // SIMULAÇÃO FRONT-END
-    // Enquanto o Back-End não está pronto, você usa este "if" falso 
-    // apenas para testar se o seu redirecionamento está funcionando!
-
-    if((email_digitado === 'admin@ifpe.edu.br') && (senha_digitada === '123')){
+        localStorage.setItem('auth_token', dados.token);
         window.location.href = 'pagina_criar_editar_ppcs/criar_editar_ppcs.html';
-    }
-
-    else{
-        alert('ERRO NA SIMULAÇÃO, CREDENCIAIS INVÁLIDAS! Tente admin@ifpe.edu.br e 123');
+    } catch (erro) {
+        console.error('Erro ao conectar com o back-end:', erro);
+        alert('Nao foi possivel conectar ao servidor. Verifique se o back-end esta rodando.');
     }
 });
