@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+    <script src="script/script.js" defer></script>
+    <link rel="stylesheet" href="style/header.css">
+    <link rel="stylesheet" href="style/main.css">
+    <title>Visualizar PPC em PDF</title>
+</head>
+
+<body>
+    <header>
+        <a href="../pagina_criar_editar_ppcs/criar_editar_ppcs.html">VOLTAR</a>
+    </header>
+
+    <main>
+        <div class="container_visualizacao">
+            <h1 id="titulo_ppc"></h1>
+            
+            <div class="opcoes_visualizacao">
+                <button id="btn_download_pdf" type="button">BAIXAR PDF</button>
+            </div>
+
+            <!-- Área para exibir o fluxograma -->
+            <div id="area_fluxograma" class="area_fluxograma"></div>
+
+            <!-- Tabela de disciplinas -->
+            <div id="area_tabela" class="area_tabela"></div>
+        </div>
+    </main>
+</body>
+</html>

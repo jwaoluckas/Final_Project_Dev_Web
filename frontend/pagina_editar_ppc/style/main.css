@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+}
+
+body {
+    background-color: #f9f9f9;
+}
+
+main {
+    padding: 2vh 0;
+}
+
+/* Container de informações do curso (somente leitura) */
+.campo_info_curso {
+    display: flex;
+    flex-direction: column;
+    padding: 2vh 10vw;
+    background-color: white;
+    color: #2F9E41;
+    font-weight: 500;
+    font-size: 16px;
+    border-bottom: 1vh solid #2F9E41;
+    border-radius: 10px;
+    margin: 1vh;
+    box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.3);
+    gap: 15px;
+}
+
+.campo_info_curso h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2F9E41;
+    margin-bottom: 10px;
+}
+
+.info_readonly {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.info_readonly label {
+    font-weight: 700;
+    color: #2F9E41;
+}
+
+.info_readonly p {
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-left: 3px solid #2F9E41;
+    border-radius: 4px;
+    color: #333;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+    .campo_info_curso {
+        padding: 2vh 5vw;
+    }
+}

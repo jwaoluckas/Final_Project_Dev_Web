@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="script/script.js" defer></script>
+    <link rel="stylesheet" href="style/header.css">
+    <link rel="stylesheet" href="style/main.css">
+    <link rel="stylesheet" href="style/campo_config_periodo.css">
+    <title>Editar PPC</title>
+</head>
+
+<body>
+    <header>
+        <a href="../pagina_criar_editar_ppcs/criar_editar_ppcs.html">VOLTAR</a>
+    </header>
+
+    <main>
+        <!-- INFORMAÇÕES DO CURSO (SOMENTE LEITURA) -->
+        <div class="campo_info_curso">
+            <h2>Informações do Curso</h2>
+            
+            <div class="info_readonly">
+                <label>Nome do Curso:</label>
+                <p id="info_nome_curso"></p>
+            </div>
+
+            <div class="info_readonly">
+                <label>Natureza:</label>
+                <p id="info_natureza"></p>
+            </div>
+
+            <div class="info_readonly">
+                <label>Total de Períodos:</label>
+                <p id="info_periodos"></p>
+            </div>
+
+        </div>
+
+        <!-- EDIÇÃO DE DISCIPLINAS -->
+        <div class="campo_config_periodo">
+            <h2>Editar Disciplinas e Pré-requisitos</h2>
+            <div class="botoes">
+                <button type="submit" id="salvar_alteracoes" name="salvar_alteracoes">SALVAR ALTERAÇÕES</button>
+                <button type="button" id="cancelar_edicao" name="cancelar_edicao">CANCELAR</button>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

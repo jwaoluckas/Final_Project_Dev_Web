@@ -28,6 +28,62 @@
     flex-direction: column;
 }
 
+.periodo_container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.disciplinas_container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.div_linha_periodo {
+    display: grid;
+    grid-template-columns: 2fr 1fr 2fr 40px;
+    gap: 8px;
+    align-items: center;
+}
+
+.escolha_disciplina,
+.escolha_qtd_horas,
+.escolha_prerequisito {
+    min-width: 0;
+    padding: 4px;
+    background-color: transparent;
+    border: #2F9E41 solid 1px;
+    border-radius: 2.5px;
+}
+
+.wrapper_prerequisito {
+    position: relative;
+    min-width: 0;
+}
+
+.wrapper_prerequisito .escolha_prerequisito {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.texto_contagem_prerequisito {
+    position: absolute;
+    top: 1px;
+    bottom: 1px;
+    left: 6px;
+    right: 24px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background-color: ghostwhite;
+    color: #333;
+    font-size: 13px;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
 .campo_config_periodo div[class^="periodo_"] label{
     font-size: 25px;
     font-weight: 600;

@@ -1,0 +1,437 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+}
+
+body {
+    background-color: #f9f9f9;
+}
+
+main {
+    padding: 2vh 0;
+}
+
+/* Container principal de visualizacao */
+.container_visualizacao {
+    padding: 2vh 10vw;
+    background-color: white;
+    margin: 1vh;
+    border-radius: 10px;
+    box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.1);
+}
+
+.container_visualizacao h1 {
+    color: #2F9E41;
+    font-size: 28px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Opcoes de visualizacao */
+.opcoes_visualizacao {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.opcoes_visualizacao button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    color: white;
+}
+
+.opcoes_visualizacao button:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Area de fluxograma visivel: mantem o modelo anterior da tela. */
+.area_fluxograma {
+    display: none;
+    margin-bottom: 30px;
+}
+
+.fluxograma_container {
+    overflow-x: auto;
+    padding-bottom: 15px;
+}
+
+.fluxograma_cabecalho {
+    color: #2F9E41;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 20px;
+    text-decoration: underline;
+}
+
+.fluxograma_matriz {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(160px, 1fr);
+    gap: 12px;
+    align-items: start;
+    min-width: max-content;
+}
+
+.bloco_periodo {
+    background-color: #f0f8f5;
+    border: 2px solid #2F9E41;
+    border-radius: 4px;
+    padding: 10px;
+    min-width: 160px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.bloco_periodo h3 {
+    color: #2F9E41;
+    font-size: 14px;
+    margin-bottom: 10px;
+    text-align: center;
+    border-bottom: 2px solid #2F9E41;
+    padding-bottom: 8px;
+}
+
+.bloco_disciplina {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    padding: 8px;
+    margin-bottom: 8px;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.bloco_disciplina:last-child {
+    margin-bottom: 0;
+}
+
+.nome_disciplina {
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 4px;
+    font-size: 12px;
+    line-height: 1.25;
+}
+
+.horas_disciplina {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.prerequisitos {
+    font-size: 10px;
+    color: #2F9E41;
+    font-style: italic;
+    margin-top: 5px;
+}
+
+.bloco_optativas {
+    margin-top: 20px;
+    max-width: 100%;
+}
+
+.fluxograma_totais {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(160px, 1fr);
+    gap: 12px;
+    min-width: max-content;
+    margin-top: 12px;
+}
+
+.fluxograma_totais span {
+    border: 1px solid #999;
+    padding: 6px;
+    text-align: center;
+    font-size: 11px;
+    background-color: white;
+}
+
+.fluxograma_total_geral {
+    width: min(360px, 100%);
+    margin: 14px auto 0;
+    border: 1px solid #2F9E41;
+    border-radius: 4px;
+    padding: 10px 14px;
+    text-align: center;
+    color: #2F9E41;
+    font-size: 14px;
+    font-weight: 700;
+    background-color: white;
+}
+
+/* Alteracao: layout temporario usado somente pelo botao BAIXAR PDF. */
+.pdf_area_exportacao {
+    position: relative;
+    z-index: 99999;
+    width: max-content;
+    min-height: max-content;
+    padding: 0;
+    background-color: white;
+    pointer-events: none;
+    overflow: visible;
+    visibility: visible;
+    opacity: 1;
+}
+
+.pdf_fluxograma_documento {
+    display: grid;
+    grid-template-columns: 82px minmax(930px, 1fr);
+    gap: 10px;
+    width: var(--largura-pdf, 1120px);
+    min-height: 690px;
+    padding: 12px;
+    background-color: white;
+    border: 1px solid #222;
+    color: #111;
+}
+
+.pdf_fluxograma_faixa_lateral {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #999;
+    background-color: #f1f1f1;
+    color: #222;
+    font-family: serif;
+    font-size: 12px;
+    line-height: 1.2;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.pdf_fluxograma_faixa_lateral span {
+    display: block;
+    width: 620px;
+    max-width: 620px;
+    white-space: nowrap;
+    transform: rotate(-90deg);
+}
+
+.pdf_fluxograma_conteudo {
+    min-width: 0;
+}
+
+.pdf_fluxograma_titulo {
+    color: #111;
+    font-family: serif;
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 10px;
+    text-decoration: underline;
+}
+
+.pdf_fluxograma_grafico {
+    position: relative;
+    min-width: max-content;
+}
+
+.pdf_fluxograma_setas {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    overflow: visible;
+    pointer-events: none;
+}
+
+.pdf_linha_prerequisito {
+    fill: none;
+    stroke: #222;
+    stroke-width: 1.2;
+}
+
+.pdf_fluxograma_matriz {
+    display: grid;
+    grid-template-columns: repeat(var(--total-periodos), minmax(106px, 1fr));
+    gap: 8px;
+    align-items: start;
+    min-width: max-content;
+    position: relative;
+    z-index: 2;
+}
+
+.pdf_bloco_periodo {
+    background-color: transparent;
+    min-width: 106px;
+}
+
+.pdf_bloco_periodo h3 {
+    color: #111;
+    font-family: serif;
+    font-size: 9px;
+    margin-bottom: 6px;
+    text-align: center;
+    border: 1px solid #555;
+    padding: 5px 3px;
+    background-color: white;
+}
+
+.pdf_bloco_disciplina {
+    background-color: white;
+    border: 1px solid #555;
+    border-radius: 0;
+    padding: 4px 3px;
+    margin-bottom: 7px;
+    min-height: 42px;
+    break-inside: avoid;
+}
+
+.pdf_bloco_optativas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(106px, 1fr));
+    gap: 7px;
+    margin-top: 8px;
+}
+
+.pdf_bloco_optativas h3 {
+    grid-column: 1 / -1;
+    color: #111;
+    font-family: serif;
+    font-size: 9px;
+    margin-bottom: 0;
+    text-align: center;
+    border: 1px solid #555;
+    padding: 5px 3px;
+    background-color: white;
+}
+
+.pdf_nome_disciplina {
+    color: #111;
+    font-family: serif;
+    font-size: 8px;
+    font-weight: 600;
+    line-height: 1.1;
+    text-align: center;
+}
+
+.pdf_horas_disciplina {
+    color: #111;
+    font-family: serif;
+    font-size: 7px;
+    margin-top: 3px;
+    text-align: center;
+}
+
+.pdf_fluxograma_totais {
+    display: grid;
+    grid-template-columns: repeat(var(--total-periodos, 1), minmax(106px, 1fr));
+    gap: 8px;
+    min-width: max-content;
+    margin-top: 8px;
+}
+
+.pdf_fluxograma_totais span {
+    border: 1px solid #555;
+    padding: 4px 3px;
+    text-align: center;
+    font-family: serif;
+    font-size: 8px;
+    background-color: white;
+}
+
+.pdf_fluxograma_total_geral {
+    width: 260px;
+    margin: 10px auto 0;
+    border: 1px solid #555;
+    padding: 6px 10px;
+    text-align: center;
+    font-family: serif;
+    font-size: 10px;
+    font-weight: 700;
+    background-color: white;
+}
+
+/* Area de tabela */
+.area_tabela {
+    display: none;
+}
+
+.area_tabela h2 {
+    color: #2F9E41;
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.secao_periodo {
+    margin-bottom: 30px;
+}
+
+.secao_periodo h3 {
+    color: #2F9E41;
+    font-size: 18px;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #2F9E41;
+    padding-bottom: 10px;
+}
+
+.tabela_disciplinas {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tabela_disciplinas thead {
+    background-color: #2F9E41;
+    color: white;
+}
+
+.tabela_disciplinas th {
+    padding: 12px;
+    text-align: left;
+    font-weight: 700;
+}
+
+.tabela_disciplinas td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.tabela_disciplinas tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+.tabela_disciplinas tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+    .container_visualizacao {
+        padding: 2vh 5vw;
+    }
+
+    .opcoes_visualizacao {
+        flex-direction: column;
+    }
+
+    .opcoes_visualizacao button {
+        width: 100%;
+    }
+
+    .bloco_periodo {
+        min-width: 180px;
+    }
+
+    .tabela_disciplinas {
+        font-size: 12px;
+    }
+
+    .tabela_disciplinas th,
+    .tabela_disciplinas td {
+        padding: 8px;
+    }
+}
