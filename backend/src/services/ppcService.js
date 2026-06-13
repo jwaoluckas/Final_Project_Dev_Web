@@ -4,7 +4,7 @@ const periodRepository = require('../repositories/periodRepository');
 const disciplineRepository = require('../repositories/disciplineRepository');
 
 class PPCService {
-  async createPPC(ppcData) {
+  async createPPC(ppcData, userId) {
     const client = await pool.connect();
     try {
       // Alteracao PPC: salva curso, periodos, disciplinas e pre-requisitos em uma unica transacao.
@@ -13,7 +13,8 @@ class PPCService {
       const course = await courseRepository.create({
         name: ppcData.name,
         nature: ppcData.nature,
-        total_periods: ppcData.total_periods
+        total_periods: ppcData.total_periods,
+        user_id: userId
       }, client);
 
       const disciplineMap = new Map();
@@ -51,7 +52,7 @@ class PPCService {
       }
 
       await client.query('COMMIT');
-      return this.getPPCById(course.id);
+      return this.getPPCById(course.id, userId);
     } catch (error) {
       await client.query('ROLLBACK');
       throw error;
@@ -60,19 +61,19 @@ class PPCService {
     }
   }
 
-  async updatePPC(courseId, ppcData) {
+  async updatePPC(courseId, ppcData, userId) {
     const client = await pool.connect();
     try {
       // Alteracao PPC: a edicao recria a matriz do curso dentro de transacao para manter consistencia.
       await client.query('BEGIN');
 
-      const existingCourse = await courseRepository.findById(courseId);
+      const existingCourse = await courseRepository.findByIdAndUserId(courseId, userId);
       if (!existingCourse) {
         await client.query('ROLLBACK');
         return null;
       }
 
-      await courseRepository.update(courseId, {
+      await courseRepository.update(courseId, userId, {
         name: ppcData.name,
         nature: ppcData.nature,
         total_periods: ppcData.total_periods
@@ -115,7 +116,7 @@ class PPCService {
       }
 
       await client.query('COMMIT');
-      return this.getPPCById(courseId);
+      return this.getPPCById(courseId, userId);
     } catch (error) {
       await client.query('ROLLBACK');
       throw error;
@@ -124,8 +125,8 @@ class PPCService {
     }
   }
 
-  async getPPCById(courseId) {
-    const course = await courseRepository.findById(courseId);
+  async getPPCById(courseId, userId) {
+    const course = await courseRepository.findByIdAndUserId(courseId, userId);
     if (!course) return null;
 
     const periods = await periodRepository.findByCourseId(courseId);
@@ -146,12 +147,12 @@ class PPCService {
     return fullPPC;
   }
 
-  async listAllPPCs() {
-    return await courseRepository.findAll();
+  async listAllPPCs(userId) {
+    return await courseRepository.findAllByUserId(userId);
   }
 
-  async deletePPC(courseId) {
-    await courseRepository.delete(courseId);
+  async deletePPC(courseId, userId) {
+    return await courseRepository.deleteByIdAndUserId(courseId, userId);
   }
 }
 

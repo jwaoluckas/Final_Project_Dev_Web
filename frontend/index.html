@@ -24,6 +24,11 @@
             <div class="campo_senha">
                 <label for="senha_usuario">Digite sua senha:</label>
                 <input type="password" name="senha_usuario" required>
+                <!-- Alteracao auth: permite visualizar/ocultar a senha digitada sem mudar o fluxo de login. -->
+                <label class="mostrar_senha">
+                    <input type="checkbox" id="mostrar_senha">
+                    Mostrar senha
+                </label>
             </div>
 
             <button type="submit" name="botao_entrar">ENTRAR</button>

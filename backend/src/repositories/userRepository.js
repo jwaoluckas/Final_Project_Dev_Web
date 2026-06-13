@@ -30,8 +30,21 @@ async function createUser({ email, passwordHash }) {
   return result.rows[0] || null;
 }
 
+async function updatePasswordHash(id, passwordHash) {
+  const result = await pool.query(
+    `UPDATE users
+     SET password_hash = $1, updated_at = CURRENT_TIMESTAMP
+     WHERE id = $2
+     RETURNING id, email`,
+    [passwordHash, id]
+  );
+
+  return result.rows[0] || null;
+}
+
 module.exports = {
   findByEmail,
   findById,
-  createUser
+  createUser,
+  updatePasswordHash
 };
