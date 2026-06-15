@@ -32,7 +32,7 @@ async function forgotPassword(req, res, next) {
       return res.status(400).json({ message: 'E-mail e obrigatorio.' });
     }
 
-    // Alteracao auth: dispara o fluxo de e-mail sem retornar dados sensiveis para o frontend.
+    // Dispara o fluxo de e-mail sem retornar dados sensiveis para o frontend.
     await authService.requestPasswordReset({ email });
 
     return res.json({
@@ -55,7 +55,7 @@ async function resetPassword(req, res, next) {
       return res.status(400).json({ message: 'A nova senha deve ter pelo menos 6 caracteres.' });
     }
 
-    // Alteracao auth: valida o token recebido por e-mail e troca o hash da senha no banco.
+    // Valida o token recebido por e-mail e troca o hash da senha no banco.
     const passwordChanged = await authService.resetPassword({ token, novaSenha });
 
     if (!passwordChanged) {

@@ -8,7 +8,7 @@ function getNodemailer() {
   }
 }
 
-// Alteracao auth: garante que as credenciais SMTP foram configuradas antes de tentar enviar e-mail.
+// Garante que as credenciais SMTP foram configuradas antes de tentar enviar e-mail.
 function validarConfigSmtp() {
   if (!config.smtpHost || !config.smtpUser || !config.smtpPass) {
     throw new Error('SMTP_HOST, SMTP_USER e SMTP_PASS devem estar configurados para enviar recuperacao de senha.');
@@ -18,7 +18,7 @@ function validarConfigSmtp() {
 async function sendPasswordResetEmail({ to, resetLink }) {
   validarConfigSmtp();
 
-  // Alteracao auth: usa SMTP generico; no desenvolvimento atual as credenciais sao do Mailtrap.
+  // Usa modelo SMTP genérico no desenvolvimento atual das credenciais no Mailtrap.
   const nodemailer = getNodemailer();
   const transporter = nodemailer.createTransport({
     host: config.smtpHost,

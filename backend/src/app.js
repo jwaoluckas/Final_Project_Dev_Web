@@ -16,7 +16,7 @@ app.get('/health', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 
-// Alteracao PPC: registra as rotas de criar, listar, editar, visualizar e deletar PPCs.
+// Registra as rotas CRUD.
 app.use('/api/ppc', ppcRoutes);
 app.use(errorHandler);
 

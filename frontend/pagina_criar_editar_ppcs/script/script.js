@@ -8,7 +8,7 @@ const link_sair = document.querySelector('header a');
 
 // ========== VALIDAÇÃO DE AUTENTICAÇÃO ==========
 
-// Proteção da página: valida o JWT no back-end antes de permitir o uso da área interna.
+// Valida o JWT no back-end antes de permitir o usuário acesse o sistema.
 async function validar_autenticacao() {
     const token = localStorage.getItem('auth_token');
 
@@ -41,7 +41,7 @@ async function validar_autenticacao() {
 
 // ========== LOGOUT ==========
 
-// Logout implementado: remove o JWT salvo no navegador antes de voltar para a tela de login.
+// Remove o JWT salvo no navegador antes de voltar para a tela de login.
 link_sair.addEventListener('click', (evento) => {
     evento.preventDefault();
     localStorage.removeItem('auth_token');
@@ -78,7 +78,7 @@ async function carregarPPCs() {
             return;
         }
 
-        // Criar card para cada PPC
+        // Cria card para cada PPC
         ppcs.forEach(ppc => {
             criarCardPPC(ppc);
         });
@@ -92,7 +92,7 @@ async function carregarPPCs() {
     }
 }
 
-// Alteracao PPC: cada card passa a representar um PPC salvo no backend, com acoes de editar, PDF e deletar.
+// Cada card passa a representar um PPC salvo no backend, com ações de editar, visualizar PPC e deletar.
 function criarCardPPC(ppc) {
     const card_ppc = document.createElement('div');
     card_ppc.id = 'card_ppc';
@@ -166,7 +166,7 @@ function visualizarPDFFluxograma(ppcId) {
     window.location.href = '../pagina_visualizar_pdf/visualizar_pdf.html?id=' + ppcId;
 }
 
-// ========== DELEÇÃO DE PPC ==========
+// ========== DELETAR PPC  ==========
 
 async function deletarPPC(ppcId, cardElement) {
     if (!confirm('Tem certeza que deseja deletar este PPC? Esta ação não pode ser desfeita.')) {

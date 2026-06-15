@@ -1,5 +1,5 @@
 ﻿// ========== CONFIGURACAO INICIAL ==========
-const API_BASE_URL = 'http://localhost:3000/api'; // Mantem a mesma API usada no login.
+const API_BASE_URL = 'http://localhost:3000/api'; 
 
 const titulo_ppc = document.getElementById('titulo_ppc');
 const area_fluxograma = document.getElementById('area_fluxograma');
@@ -64,7 +64,7 @@ function obterPeriodoOptativas(ppc) {
     return ppc.periods.find(periodo => periodo.period_number === 0);
 }
 
-// Alteracao: aceita pre-requisito vindo como objeto ou texto, mantendo compatibilidade com o backend atual.
+//aceita pre-requisito vindo como objeto ou texto, mantendo compatibilidade com o backend.
 function obterNomePrerequisito(prerequisito) {
     return prerequisito && typeof prerequisito === 'object' ? prerequisito.name : prerequisito;
 }
@@ -152,7 +152,7 @@ function gerarFluxograma(ppc) {
     });
     container.appendChild(totais);
 
-    // Alteracao: exibe a carga horaria total tambem no final da visualizacao da pagina.
+    //exibe a carga horaria total no final da pagina.
     const cargaTotal = ppc.periods.reduce((somaPeriodo, periodo) => {
         return somaPeriodo + periodo.disciplines.reduce((somaDisciplina, disciplina) => {
             return somaDisciplina + Number(disciplina.hours || 0);
@@ -169,7 +169,7 @@ function gerarFluxograma(ppc) {
 
 // ========== GERACAO DO FLUXOGRAMA TECNICO PARA PDF ==========
 
-// Alteracao: bloco usado apenas no PDF para evitar mudar o visual da tela.
+
 function criarBlocoDisciplinaPdf(disciplina) {
     const blocoDisciplina = document.createElement('div');
     blocoDisciplina.className = 'pdf_bloco_disciplina';
@@ -185,7 +185,7 @@ function criarBlocoDisciplinaPdf(disciplina) {
     blocoDisciplina.appendChild(nomeDisciplina);
     blocoDisciplina.appendChild(horasDisciplina);
 
-    // Alteracao PDF: os pre-requisitos aparecem como texto na propria disciplina, dispensando ligacoes por setas.
+    //os pre-requisitos exibidos no card do PDF de Disciplina.
     if (disciplina.prerequisites && disciplina.prerequisites.length > 0) {
         const prerequisitos = document.createElement('p');
         prerequisitos.className = 'pdf_prerequisitos_disciplina';
@@ -197,13 +197,12 @@ function criarBlocoDisciplinaPdf(disciplina) {
     return blocoDisciplina;
 }
 
-// Alteracao: cria um documento temporario no formato de fluxograma oficial para baixar em A4 paisagem.
+//documento temporario no formato de fluxograma das disciplinas.
 function criarDocumentoFluxogramaPdf(ppc) {
     const documento = document.createElement('div');
     documento.className = 'pdf_fluxograma_documento';
     const totalPeriodos = obterPeriodosRegulares(ppc).length || 1;
     documento.style.setProperty('--total-periodos', totalPeriodos);
-    // Alteracao PDF: largura dinamica acompanha a quantidade de periodos para evitar corte lateral na captura.
     documento.style.setProperty('--largura-pdf', `${Math.max(1120, 150 + totalPeriodos * 132)}px`);
 
     const faixaLateral = document.createElement('div');
@@ -273,7 +272,7 @@ function criarDocumentoFluxogramaPdf(ppc) {
     });
     conteudo.appendChild(totais);
 
-    // Alteracao: mostra a carga horaria total somando os periodos e as optativas cadastradas.
+    //mostra a carga horaria total com a soma dos periodos.
     const cargaTotal = ppc.periods.reduce((somaPeriodo, periodo) => {
         return somaPeriodo + periodo.disciplines.reduce((somaDisciplina, disciplina) => {
             return somaDisciplina + Number(disciplina.hours || 0);
@@ -366,7 +365,7 @@ function gerarTabela(ppc) {
 
 // ========== DOWNLOAD DE PDF ==========
 
-// Alteracao: gera o PDF manualmente para evitar corte lateral; a largura sempre encaixa no A4 paisagem.
+
 async function salvarFluxogramaComoPdf(elemento, nomeArquivo) {
     if (typeof html2canvas === 'undefined') {
         throw new Error('Biblioteca html2canvas nao disponivel.');
@@ -432,14 +431,13 @@ btn_download_pdf.addEventListener('click', async () => {
     let areaExportacao = null;
 
     try {
-        // Alteracao: usa uma area estatica e capturavel para evitar PDF em branco no html2canvas.
         elemento = criarDocumentoFluxogramaPdf(ppcData);
         areaExportacao = document.createElement('div');
         areaExportacao.className = 'pdf_area_exportacao';
         areaExportacao.appendChild(elemento);
         document.body.appendChild(areaExportacao);
         await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-        // Alteracao PDF: nao desenha mais setas; a captura usa somente as caixas com texto de pre-requisito.
+        //captura somente as caixas com texto de pre-requisito.
         areaExportacao.style.width = `${elemento.scrollWidth}px`;
         areaExportacao.style.height = `${elemento.scrollHeight}px`;
 

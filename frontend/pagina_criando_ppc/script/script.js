@@ -118,7 +118,7 @@ function coletarDisciplinasAnteriores(numeroPeriodo) {
     return disciplinas;
 }
 
-// Alteracao PPC: cria um select multiplo com texto amigavel de contagem de pre-requisitos.
+// Cria um select múltiplo para escolher os pré-requisitos.
 function criarCampoPrerequisito() {
     const wrapperPrerequisito = document.createElement('div');
     wrapperPrerequisito.className = 'wrapper_prerequisito';
@@ -214,7 +214,7 @@ function atualizarOpcoesPrerequisito(linha, numeroPeriodo) {
     atualizarTextoContagemPrerequisito(campoPrerequisito);
 }
 
-// Alteracao PPC: atualiza todos os selects quando disciplinas anteriores sao editadas ou removidas.
+// Atualiza todos os selects quando disciplinas anteriores são editadas ou removidas.
 function atualizarTodosPrerequisitos() {
     for (let i = 1; i <= ppcData.total_periods; i++) {
         const containerDisciplinas = document.getElementById(`disciplinas_periodo_${i}`);
@@ -271,7 +271,7 @@ function gerarCamposPeriodos() {
     gerarCampoOptativas();
 }
 
-// Alteracao PPC: optativas ficam em period_number 0 para nao criar novo modelo/tabela no banco.
+// Cria campo optativas como opcional.
 function gerarCampoOptativas() {
     const divPeriodo = document.createElement('div');
     divPeriodo.className = 'periodo_container';
@@ -335,7 +335,7 @@ function adicionarCampoDisciplina(containerDisciplinas, numeroPeriodo) {
     atualizarOpcoesPrerequisito(divLinhaPeriodo, numeroPeriodo);
 }
 
-// Alteracao PPC: envia o PPC completo para o backend, incluindo periodos, optativas e pre-requisitos.
+// Envia o PPC completo para o backend ao clicar, incluindo periodos, optativas e pré-requisitos.
 botao_confirmar.addEventListener('click', async (evento) => {
     evento.preventDefault();
 
@@ -397,7 +397,7 @@ botao_confirmar.addEventListener('click', async (evento) => {
     }
 });
 
-// Alteracao PPC: valida todas as linhas visiveis antes do envio; linhas nao usadas devem ser removidas no X.
+// Valida todas as linhas visíveis antes do envio; campos não usados devem ser removidos.
 function validarPreenchimentoPeriodosObrigatorios() {
     for (let i = 1; i <= ppcData.total_periods; i++) {
         const containerDisciplinas = document.getElementById(`disciplinas_periodo_${i}`);
@@ -419,7 +419,7 @@ function validarPreenchimentoPeriodosObrigatorios() {
     return { valido: true };
 }
 
-// Alteracao PPC: toda linha existente e obrigatoria; para nao cadastrar, o usuario remove no X.
+// Toda linha existente e obrigatória, para evitar que o usuário deixe algum campo em branco.
 function validarContainerDisciplinas(containerDisciplinas, numeroPeriodo, obrigatorio, exigirLinhasExistentes = false) {
     const linhas = containerDisciplinas.querySelectorAll('.div_linha_periodo');
     let possuiDisciplinaCompleta = false;

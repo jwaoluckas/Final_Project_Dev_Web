@@ -7,7 +7,7 @@ class PPCService {
   async createPPC(ppcData, userId) {
     const client = await pool.connect();
     try {
-      // Alteracao PPC: salva curso, periodos, disciplinas e pre-requisitos em uma unica transacao.
+      // Salva curso, períodos, disciplinas e pré-requisitos em uma única transação executada.
       await client.query('BEGIN');
 
       const course = await courseRepository.create({
@@ -19,7 +19,7 @@ class PPCService {
 
       const disciplineMap = new Map();
 
-      // Alteracao PPC: primeiro cria todas as disciplinas para depois conseguir ligar pre-requisitos por nome.
+      // Primeiro cria todas as disciplinas para depois conseguir ligar com pré-requisitos por nome selecionado(s).
       for (const periodData of ppcData.periods) {
         const period = await periodRepository.create({
           course_id: course.id,
@@ -38,7 +38,7 @@ class PPCService {
         }
       }
 
-      // Alteracao PPC: pre-requisitos multiplos sao persistidos na tabela de relacionamento.
+      // pré-requisitos múltiplos são permitidos na tabela de relacionamento.
       for (const periodData of ppcData.periods) {
         for (const discData of periodData.disciplines) {
           const disciplineId = disciplineMap.get(discData.name);
@@ -64,7 +64,7 @@ class PPCService {
   async updatePPC(courseId, ppcData, userId) {
     const client = await pool.connect();
     try {
-      // Alteracao PPC: a edicao recria a matriz do curso dentro de transacao para manter consistencia.
+      // A edição recria a matriz do curso dentro de transação para manter consistência.
       await client.query('BEGIN');
 
       const existingCourse = await courseRepository.findByIdAndUserId(courseId, userId);
@@ -83,7 +83,7 @@ class PPCService {
 
       const disciplineMap = new Map();
 
-      // Alteracao PPC: depois de limpar os periodos antigos, recria a matriz enviada pelo frontend.
+      // Depois de limpar os periodos antigos, recria a matriz enviada pelo frontend.
       for (const periodData of ppcData.periods) {
         const period = await periodRepository.create({
           course_id: courseId,
@@ -102,7 +102,7 @@ class PPCService {
         }
       }
 
-      // Alteracao PPC: religa os pre-requisitos apos todas as disciplinas editadas existirem no banco.
+      // Mantém os pré-requisitos após todas as disciplinas editadas existirem no banco de dados.
       for (const periodData of ppcData.periods) {
         for (const discData of periodData.disciplines) {
           const disciplineId = disciplineMap.get(discData.name);

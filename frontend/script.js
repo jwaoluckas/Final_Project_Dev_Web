@@ -3,7 +3,7 @@ const link_senha = document.getElementById('esqueceu_a_senha');
 const checkbox_mostrar_senha = document.getElementById('mostrar_senha');
 const API_BASE_URL = 'http://localhost:3000/api';
 
-// Alteracao auth: remove o bloco dinamico de recuperacao para nao duplicar mensagens na tela.
+//remove o bloco dinamico de recuperacao para nao duplicar mensagens na tela.
 function removerAvisoSenha() {
     const avisoExistente = document.getElementById('campo_aviso');
     if (avisoExistente) {
@@ -11,7 +11,7 @@ function removerAvisoSenha() {
     }
 }
 
-// Alteracao auth: reutiliza campos de senha no fluxo de redefinicao por token.
+//campos de senha do fluxo de redefinicao pelo token.
 function criarCampoSenha({ placeholder }) {
     const input = document.createElement('input');
     input.type = 'password';
@@ -20,7 +20,7 @@ function criarCampoSenha({ placeholder }) {
     return input;
 }
 
-// Alteracao auth: solicita ao backend o envio do link de redefinicao pelo SMTP configurado.
+//solicita ao backend o envio do link de redefinicao pelo SMTP configurado.
 function mostrarFluxoSolicitarReset() {
     removerAvisoSenha();
 
@@ -73,7 +73,7 @@ function mostrarFluxoSolicitarReset() {
     form.appendChild(aviso);
 }
 
-// Alteracao auth: quando o link do e-mail traz reset_token, mostra os campos para cadastrar nova senha.
+//ao validar o token, mostra os campos para cadastrar nova senha.
 function mostrarFluxoRedefinirSenha(token) {
     removerAvisoSenha();
 
@@ -126,13 +126,13 @@ function mostrarFluxoRedefinirSenha(token) {
     form.appendChild(aviso);
 }
 
-// Alteracao auth: troca o aviso antigo por um fluxo real de envio de link de recuperacao.
+//troca o aviso antigo pelo fluxo de envio de link de recuperacao.
 link_senha.addEventListener('click', (evento) =>{
     evento.preventDefault();
     mostrarFluxoSolicitarReset();
 });
 
-// Alteracao auth: checkbox simples para alternar entre senha oculta e visivel no login.
+//checkbox para visualizar a senha digitada.
 checkbox_mostrar_senha.addEventListener('change', () => {
     const campoSenha = document.querySelector('input[name="senha_usuario"]');
     campoSenha.type = checkbox_mostrar_senha.checked ? 'text' : 'password';
@@ -144,7 +144,7 @@ form.addEventListener('submit', async (evento) =>{
     const email_digitado = document.querySelector('input[name="email_usuario"]').value;
     const senha_digitada = document.querySelector('input[name="senha_usuario"]').value;
 
-    // Autenticacao implementada via back-end: envia e-mail e senha para a API e salva o JWT retornado.
+    //envia o e-mail e senha para a API e salva o JWT retornado.
     try {
         const resposta = await fetch(`${API_BASE_URL}/auth/login`, {
             method: 'POST',
@@ -167,7 +167,7 @@ form.addEventListener('submit', async (evento) =>{
     }
 });
 
-// Alteracao auth: abre automaticamente o formulario de nova senha quando o usuario vem pelo link do e-mail.
+//abre o formulario de nova senha quando o usuario vem pelo link do e-mail.
 document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     const resetToken = params.get('reset_token');

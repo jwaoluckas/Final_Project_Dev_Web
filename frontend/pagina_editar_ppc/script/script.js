@@ -53,7 +53,7 @@ async function carregarPPC(ppcId) {
 }
 
 function preencherInformacoesCurso(ppc) {
-    // Alteracao PPC: dados gerais do curso tambem ficam editaveis na tela de edicao.
+    // Campos gerais do curso também ficam editáveis na tela de edição.
     campo_nome_curso.value = ppc.name;
     campo_natureza.value = ppc.nature;
     campo_total_periodos.value = ppc.total_periods;
@@ -125,7 +125,7 @@ function coletarDisciplinasAnteriores(numeroPeriodo) {
     return disciplinas;
 }
 
-// Alteracao PPC: cria um select multiplo com texto amigavel de contagem de pre-requisitos.
+// Cria um select múltiplo com texto de pré-requisitos.
 function criarCampoPrerequisito() {
     const wrapperPrerequisito = document.createElement('div');
     wrapperPrerequisito.className = 'wrapper_prerequisito';
@@ -235,7 +235,7 @@ function atualizarOpcoesPrerequisito(linha, numeroPeriodo) {
     atualizarTextoContagemPrerequisito(campoPrerequisito);
 }
 
-// Alteracao PPC: atualiza todos os selects quando disciplinas anteriores sao editadas ou removidas.
+// Atualiza todos os selects quando disciplinas anteriores são editadas ou removidas.
 function atualizarTodosPrerequisitos() {
     for (let i = 1; i <= ppcData.total_periods; i++) {
         const containerDisciplinas = document.getElementById(`disciplinas_periodo_${i}`);
@@ -252,7 +252,7 @@ function atualizarTodosPrerequisitos() {
     }
 }
 
-// Alteracao PPC: cria periodos vazios quando o total de periodos e aumentado na edicao.
+// Cria períodos vazios quando o total de períodos é aumentado na edição.
 function criarPeriodoVazioEditavel(numeroPeriodo) {
     const divPeriodo = document.createElement('div');
     divPeriodo.className = 'periodo_container';
@@ -365,7 +365,7 @@ function preencherPeriodosEDisciplinas(ppc) {
     atualizarTodosPrerequisitos();
 }
 
-// Alteracao PPC: permite editar as optativas no bloco especial period_number 0.
+// Permite editar as optativas.
 function preencherOptativas(ppc) {
     const periodoOptativas = ppc.periods.find(periodo => periodo.period_number === 0);
 
@@ -544,7 +544,7 @@ campo_total_periodos.addEventListener('change', () => {
     ajustarPeriodosPeloTotalEditavel(novoTotalPeriodos);
 });
 
-// Alteracao PPC: a edicao segue a mesma regra da criacao; toda linha visivel deve ser preenchida ou removida.
+// Toda linha visível de campo deve ser preenchida ou removida.
 function validarPreenchimentoPeriodosEdicao() {
     for (let i = 1; i <= ppcData.total_periods; i++) {
         const containerDisciplinas = document.getElementById(`disciplinas_periodo_${i}`);

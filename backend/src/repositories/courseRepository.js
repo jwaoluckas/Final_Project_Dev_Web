@@ -1,7 +1,6 @@
 const { pool } = require('../database/pool');
 
 class CourseRepository {
-  // Alteracao PPC: o curso mantem apenas os campos base da migration 002.
   // Cria um novo curso
   async create(courseData, client = pool) {
     const { name, nature, total_periods, user_id } = courseData;
@@ -29,7 +28,7 @@ class CourseRepository {
     return rows[0];
   }
 
-  // Atualiza um curso
+
   async update(id, userId, courseData, client = pool) {
     const { name, nature, total_periods } = courseData;
     const query = `
@@ -43,7 +42,7 @@ class CourseRepository {
     return rows[0];
   }
 
-  // Deleta um curso
+
   async deleteByIdAndUserId(id, userId) {
     const query = 'DELETE FROM courses WHERE id = $1 AND user_id = $2';
     const { rowCount } = await pool.query(query, [id, userId]);

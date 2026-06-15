@@ -15,7 +15,7 @@ class DisciplineRepository {
     return rows[0];
   }
 
-  // Busca disciplinas por período
+
   async findByPeriodId(periodId) {
     const query = 'SELECT * FROM disciplines WHERE period_id = $1 ORDER BY name ASC';
     const { rows } = await pool.query(query, [periodId]);
@@ -35,8 +35,8 @@ class DisciplineRepository {
     return rows;
   }
 
-  // Adiciona pré-requisito
-  // Alteracao PPC: grava cada pre-requisito como uma linha na tabela discipline_prerequisites.
+  /*Adiciona pré-requisito: grava cada pré-requisito como 
+  uma linha na tabela discipline_prerequisites.*/
   async addPrerequisite(disciplineId, prerequisiteId, client = pool) {
     const query = `
       INSERT INTO discipline_prerequisites (discipline_id, prerequisite_discipline_id)
@@ -45,7 +45,7 @@ class DisciplineRepository {
     await client.query(query, [disciplineId, prerequisiteId]);
   }
 
-  // Busca pré-requisitos de uma disciplina
+
   async findPrerequisites(disciplineId) {
     const query = `
       SELECT d.* 
