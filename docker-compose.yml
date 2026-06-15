@@ -1,0 +1,57 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: gerador_ppcs_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: gerador_ppcs
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d gerador_ppcs"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    container_name: gerador_ppcs_backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgres://postgres:postgres@db:5432/gerador_ppcs
+      JWT_SECRET: ${JWT_SECRET:-gerador_ppc_docker_dev_secret}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1h}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-marcelo513.ma@outlook.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-@dmin123}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-2525}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-Gerador de PPCs <no-reply@gerador-ppcs.local>}
+      SMTP_REJECT_UNAUTHORIZED: ${SMTP_REJECT_UNAUTHORIZED:-true}
+      PASSWORD_RESET_BASE_URL: ${PASSWORD_RESET_BASE_URL:-http://localhost:5500/frontend}
+    ports:
+      - "3000:3000"
+    command: sh -c "npm run setup && npm start"
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: gerador_ppcs_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "5500:80"
+
+volumes:
+  postgres_data:

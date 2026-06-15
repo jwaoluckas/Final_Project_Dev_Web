@@ -64,6 +64,26 @@ Nao envie o arquivo `.env` para o GitHub.
 - `npm run seed`: cria o usuario inicial se ele ainda nao existir.
 - `npm run setup`: executa migrations e seed em sequencia.
 
+## Docker
+
+Tambem e possivel subir o projeto completo com Docker Compose. Esse fluxo inicia PostgreSQL, backend e frontend estatico:
+
+```bash
+docker compose up --build
+```
+
+No Docker, o backend executa `npm run setup` automaticamente antes de iniciar a API, entao nao e necessario rodar `npm run setup` manualmente.
+
+Enderecos principais:
+
+- Frontend: `http://localhost:5500/frontend/index.html`
+- API: `http://localhost:3000`
+- Health check: `http://localhost:3000/health`
+
+O PostgreSQL do Docker usa volume persistente. Para zerar os dados do banco, remova tambem o volume do Compose.
+
+Para testar Mailtrap no Docker, defina as variaveis SMTP no ambiente antes de subir o Compose ou ajuste os valores no `docker-compose.yml`.
+
 ## Rotas
 
 Rotas de autenticacao:

@@ -186,7 +186,7 @@ main {
 
 .pdf_fluxograma_documento {
     display: grid;
-    grid-template-columns: 82px minmax(930px, 1fr);
+    grid-template-columns: 82px minmax(0, 1fr);
     gap: 10px;
     width: var(--largura-pdf, 1120px);
     min-height: 690px;
@@ -236,36 +236,21 @@ main {
 
 .pdf_fluxograma_grafico {
     position: relative;
-    min-width: max-content;
-}
-
-.pdf_fluxograma_setas {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    overflow: visible;
-    pointer-events: none;
-}
-
-.pdf_linha_prerequisito {
-    fill: none;
-    stroke: #222;
-    stroke-width: 1.2;
+    width: 100%;
 }
 
 .pdf_fluxograma_matriz {
     display: grid;
-    grid-template-columns: repeat(var(--total-periodos), minmax(106px, 1fr));
+    /* Alteracao PDF: colunas se ajustam dentro da pagina, sem linhas/setas ultrapassando a area. */
+    grid-template-columns: repeat(var(--total-periodos), minmax(0, 1fr));
     gap: 8px;
     align-items: start;
-    min-width: max-content;
     position: relative;
-    z-index: 2;
 }
 
 .pdf_bloco_periodo {
     background-color: transparent;
-    min-width: 106px;
+    min-width: 0;
 }
 
 .pdf_bloco_periodo h3 {
@@ -285,13 +270,14 @@ main {
     border-radius: 0;
     padding: 4px 3px;
     margin-bottom: 7px;
-    min-height: 42px;
+    min-height: 46px;
     break-inside: avoid;
+    overflow-wrap: anywhere;
 }
 
 .pdf_bloco_optativas {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(106px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
     gap: 7px;
     margin-top: 8px;
 }
@@ -315,6 +301,7 @@ main {
     font-weight: 600;
     line-height: 1.1;
     text-align: center;
+    overflow-wrap: anywhere;
 }
 
 .pdf_horas_disciplina {
@@ -325,11 +312,21 @@ main {
     text-align: center;
 }
 
+.pdf_prerequisitos_disciplina {
+    /* Alteracao PDF: substitui as ligacoes do grafo por texto legivel dentro da disciplina. */
+    color: #111;
+    font-family: serif;
+    font-size: 6.5px;
+    line-height: 1.1;
+    margin-top: 3px;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
 .pdf_fluxograma_totais {
     display: grid;
-    grid-template-columns: repeat(var(--total-periodos, 1), minmax(106px, 1fr));
+    grid-template-columns: repeat(var(--total-periodos, 1), minmax(0, 1fr));
     gap: 8px;
-    min-width: max-content;
     margin-top: 8px;
 }
 

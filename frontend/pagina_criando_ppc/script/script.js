@@ -339,6 +339,15 @@ function adicionarCampoDisciplina(containerDisciplinas, numeroPeriodo) {
 botao_confirmar.addEventListener('click', async (evento) => {
     evento.preventDefault();
 
+    const validacaoPeriodos = validarPreenchimentoPeriodosObrigatorios();
+    if (!validacaoPeriodos.valido) {
+        alert(validacaoPeriodos.mensagem);
+        if (validacaoPeriodos.campo) {
+            validacaoPeriodos.campo.focus();
+        }
+        return;
+    }
+
     coletarDadosPeriodos();
 
     let totalDisciplinas = 0;
@@ -387,6 +396,79 @@ botao_confirmar.addEventListener('click', async (evento) => {
         alert(`Erro ao criar PPC: ${error.message}`);
     }
 });
+
+// Alteracao PPC: valida todas as linhas visiveis antes do envio; linhas nao usadas devem ser removidas no X.
+function validarPreenchimentoPeriodosObrigatorios() {
+    for (let i = 1; i <= ppcData.total_periods; i++) {
+        const containerDisciplinas = document.getElementById(`disciplinas_periodo_${i}`);
+        const validacaoPeriodo = validarContainerDisciplinas(containerDisciplinas, i, true);
+
+        if (!validacaoPeriodo.valido) {
+            return validacaoPeriodo;
+        }
+    }
+
+    const containerOptativas = document.getElementById('disciplinas_periodo_0');
+    if (containerOptativas) {
+        const validacaoOptativas = validarContainerDisciplinas(containerOptativas, 0, false, true);
+        if (!validacaoOptativas.valido) {
+            return validacaoOptativas;
+        }
+    }
+
+    return { valido: true };
+}
+
+// Alteracao PPC: toda linha existente e obrigatoria; para nao cadastrar, o usuario remove no X.
+function validarContainerDisciplinas(containerDisciplinas, numeroPeriodo, obrigatorio, exigirLinhasExistentes = false) {
+    const linhas = containerDisciplinas.querySelectorAll('.div_linha_periodo');
+    let possuiDisciplinaCompleta = false;
+
+    for (const linha of linhas) {
+        const campoNome = linha.querySelector('.escolha_disciplina');
+        const campoHoras = linha.querySelector('.escolha_qtd_horas');
+        const nomeDisciplina = campoNome.value.trim();
+        const horas = campoHoras.value;
+        const preencheuAlgumCampo = Boolean(nomeDisciplina || horas);
+        const linhaObrigatoria = obrigatorio || exigirLinhasExistentes || preencheuAlgumCampo;
+        const horasInvalidas = horas && Number(horas) <= 0;
+
+        if (horasInvalidas) {
+            return {
+                valido: false,
+                campo: campoHoras,
+                mensagem: numeroPeriodo === 0
+                    ? 'A carga horaria da optativa deve ser maior que zero.'
+                    : `A carga horaria de uma disciplina do ${numeroPeriodo}º periodo deve ser maior que zero.`
+            };
+        }
+
+        if (linhaObrigatoria && (!nomeDisciplina || !horas)) {
+            return {
+                valido: false,
+                campo: !nomeDisciplina ? campoNome : campoHoras,
+                mensagem: numeroPeriodo === 0
+                    ? 'Complete nome e carga horaria de todas as optativas ou remova a linha no X.'
+                    : `Complete nome e carga horaria de todas as linhas de disciplina do ${numeroPeriodo}º periodo ou remova a linha no X.`
+            };
+        }
+
+        if (nomeDisciplina && horas) {
+            possuiDisciplinaCompleta = true;
+        }
+    }
+
+    if (obrigatorio && !possuiDisciplinaCompleta) {
+        const primeiroCampoNome = containerDisciplinas.querySelector('.escolha_disciplina');
+        return {
+            valido: false,
+            campo: primeiroCampoNome,
+            mensagem: `Preencha pelo menos uma disciplina completa no ${numeroPeriodo}º periodo.`
+        };
+    }
+
+    return { valido: true };
+}
 
 function coletarDisciplinasDoContainer(containerDisciplinas) {
     const disciplinas = [];

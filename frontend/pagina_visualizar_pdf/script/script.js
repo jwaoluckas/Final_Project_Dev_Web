@@ -64,11 +64,6 @@ function obterPeriodoOptativas(ppc) {
     return ppc.periods.find(periodo => periodo.period_number === 0);
 }
 
-// Alteracao: normaliza nomes para localizar as disciplinas no fluxograma tecnico do PDF.
-function normalizarNomeDisciplina(valor) {
-    return String(valor || '').trim().toLowerCase();
-}
-
 // Alteracao: aceita pre-requisito vindo como objeto ou texto, mantendo compatibilidade com o backend atual.
 function obterNomePrerequisito(prerequisito) {
     return prerequisito && typeof prerequisito === 'object' ? prerequisito.name : prerequisito;
@@ -93,7 +88,7 @@ function criarBlocoDisciplinaFluxograma(disciplina) {
         const prerequisitos = document.createElement('p');
         prerequisitos.className = 'prerequisitos';
         const nomes = disciplina.prerequisites.map(p => p.name || p).join(', ');
-        prerequisitos.innerText = `Pre-req: ${nomes}`;
+        prerequisitos.innerText = `Pré-req: ${nomes}`;
         blocoDisciplina.appendChild(prerequisitos);
     }
 
@@ -178,7 +173,6 @@ function gerarFluxograma(ppc) {
 function criarBlocoDisciplinaPdf(disciplina) {
     const blocoDisciplina = document.createElement('div');
     blocoDisciplina.className = 'pdf_bloco_disciplina';
-    blocoDisciplina.dataset.disciplineName = normalizarNomeDisciplina(disciplina.name);
 
     const nomeDisciplina = document.createElement('p');
     nomeDisciplina.className = 'pdf_nome_disciplina';
@@ -191,6 +185,15 @@ function criarBlocoDisciplinaPdf(disciplina) {
     blocoDisciplina.appendChild(nomeDisciplina);
     blocoDisciplina.appendChild(horasDisciplina);
 
+    // Alteracao PDF: os pre-requisitos aparecem como texto na propria disciplina, dispensando ligacoes por setas.
+    if (disciplina.prerequisites && disciplina.prerequisites.length > 0) {
+        const prerequisitos = document.createElement('p');
+        prerequisitos.className = 'pdf_prerequisitos_disciplina';
+        const nomes = disciplina.prerequisites.map(obterNomePrerequisito).filter(Boolean).join(', ');
+        prerequisitos.innerText = `Pré-req: ${nomes}`;
+        blocoDisciplina.appendChild(prerequisitos);
+    }
+
     return blocoDisciplina;
 }
 
@@ -200,7 +203,8 @@ function criarDocumentoFluxogramaPdf(ppc) {
     documento.className = 'pdf_fluxograma_documento';
     const totalPeriodos = obterPeriodosRegulares(ppc).length || 1;
     documento.style.setProperty('--total-periodos', totalPeriodos);
-    documento.style.setProperty('--largura-pdf', `${Math.max(1120, 140 + totalPeriodos * 118)}px`);
+    // Alteracao PDF: largura dinamica acompanha a quantidade de periodos para evitar corte lateral na captura.
+    documento.style.setProperty('--largura-pdf', `${Math.max(1120, 150 + totalPeriodos * 132)}px`);
 
     const faixaLateral = document.createElement('div');
     faixaLateral.className = 'pdf_fluxograma_faixa_lateral';
@@ -220,10 +224,6 @@ function criarDocumentoFluxogramaPdf(ppc) {
     const grafico = document.createElement('div');
     grafico.className = 'pdf_fluxograma_grafico';
 
-    const svgSetas = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svgSetas.classList.add('pdf_fluxograma_setas');
-    grafico.appendChild(svgSetas);
-
     const matriz = document.createElement('div');
     matriz.className = 'pdf_fluxograma_matriz';
     matriz.style.setProperty('--total-periodos', totalPeriodos);
@@ -233,7 +233,7 @@ function criarDocumentoFluxogramaPdf(ppc) {
         blocoPeriodo.className = 'pdf_bloco_periodo';
 
         const tituloPeriodo = document.createElement('h3');
-        tituloPeriodo.innerText = `${periodo.period_number} PERIODO`;
+        tituloPeriodo.innerText = `${periodo.period_number} PERÍODO`;
         blocoPeriodo.appendChild(tituloPeriodo);
 
         periodo.disciplines.forEach(disciplina => {
@@ -287,58 +287,6 @@ function criarDocumentoFluxogramaPdf(ppc) {
 
     documento.appendChild(conteudo);
     return documento;
-}
-
-// Alteracao: desenha setas de pre-requisito apenas dentro do documento temporario do PDF.
-function desenharSetasPrerequisitosPdf(ppc, documento) {
-    const grafico = documento.querySelector('.pdf_fluxograma_grafico');
-    const svg = documento.querySelector('.pdf_fluxograma_setas');
-    if (!grafico || !svg) return;
-
-    const largura = grafico.scrollWidth;
-    const altura = grafico.scrollHeight;
-    svg.setAttribute('width', largura);
-    svg.setAttribute('height', altura);
-    svg.setAttribute('viewBox', `0 0 ${largura} ${altura}`);
-    svg.innerHTML = `
-        <defs>
-            <marker id="seta-fluxograma-pdf" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
-                <path d="M 0 0 L 8 4 L 0 8 z" fill="#222"></path>
-            </marker>
-        </defs>
-    `;
-
-    const origem = grafico.getBoundingClientRect();
-    const disciplinas = new Map();
-    grafico.querySelectorAll('.pdf_bloco_disciplina').forEach(bloco => {
-        disciplinas.set(bloco.dataset.disciplineName, bloco);
-    });
-
-    obterPeriodosRegulares(ppc).forEach(periodo => {
-        periodo.disciplines.forEach(disciplina => {
-            const destino = disciplinas.get(normalizarNomeDisciplina(disciplina.name));
-            if (!destino || !disciplina.prerequisites || disciplina.prerequisites.length === 0) return;
-
-            disciplina.prerequisites.forEach(prerequisito => {
-                const fonte = disciplinas.get(normalizarNomeDisciplina(obterNomePrerequisito(prerequisito)));
-                if (!fonte || fonte === destino) return;
-
-                const fonteRect = fonte.getBoundingClientRect();
-                const destinoRect = destino.getBoundingClientRect();
-                const x1 = fonteRect.right - origem.left + grafico.scrollLeft;
-                const y1 = fonteRect.top + fonteRect.height / 2 - origem.top + grafico.scrollTop;
-                const x2 = destinoRect.left - origem.left + grafico.scrollLeft;
-                const y2 = destinoRect.top + destinoRect.height / 2 - origem.top + grafico.scrollTop;
-                const meioX = x1 + Math.max(18, (x2 - x1) / 2);
-
-                const caminho = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                caminho.setAttribute('d', `M ${x1} ${y1} H ${meioX} V ${y2} H ${x2}`);
-                caminho.setAttribute('class', 'pdf_linha_prerequisito');
-                caminho.setAttribute('marker-end', 'url(#seta-fluxograma-pdf)');
-                svg.appendChild(caminho);
-            });
-        });
-    });
 }
 
 // ========== GERACAO DA TABELA ==========
@@ -491,7 +439,7 @@ btn_download_pdf.addEventListener('click', async () => {
         areaExportacao.appendChild(elemento);
         document.body.appendChild(areaExportacao);
         await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-        desenharSetasPrerequisitosPdf(ppcData, elemento);
+        // Alteracao PDF: nao desenha mais setas; a captura usa somente as caixas com texto de pre-requisito.
         areaExportacao.style.width = `${elemento.scrollWidth}px`;
         areaExportacao.style.height = `${elemento.scrollHeight}px`;
 

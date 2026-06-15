@@ -26,7 +26,7 @@ main{
     display: flex;
     overflow: scroll;
     justify-content: space-between;
-    background-color: blue;
+    background-color: transparent;
     width: 60vw;
     margin: 1vh;
 }

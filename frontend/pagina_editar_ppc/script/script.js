@@ -4,6 +4,9 @@ const div_campo_config_periodo = document.querySelector('.campo_config_periodo')
 const botao_salvar = document.getElementById('salvar_alteracoes');
 const botao_cancelar = document.getElementById('cancelar_edicao');
 const botoes_confirmar = document.querySelector('.botoes');
+const campo_nome_curso = document.getElementById('info_nome_curso');
+const campo_natureza = document.getElementById('info_natureza');
+const campo_total_periodos = document.getElementById('info_periodos');
 
 let ppcData = {
     id: '',
@@ -50,9 +53,47 @@ async function carregarPPC(ppcId) {
 }
 
 function preencherInformacoesCurso(ppc) {
-    document.getElementById('info_nome_curso').innerText = ppc.name;
-    document.getElementById('info_natureza').innerText = ppc.nature;
-    document.getElementById('info_periodos').innerText = ppc.total_periods;
+    // Alteracao PPC: dados gerais do curso tambem ficam editaveis na tela de edicao.
+    campo_nome_curso.value = ppc.name;
+    campo_natureza.value = ppc.nature;
+    campo_total_periodos.value = ppc.total_periods;
+    atualizarLimitesTotalPeriodos();
+}
+
+function atualizarLimitesTotalPeriodos() {
+    if (campo_natureza.value === 'bacharelado') {
+        campo_total_periodos.min = '8';
+        campo_total_periodos.max = '12';
+    } else if (campo_natureza.value === 'tecnologo') {
+        campo_total_periodos.min = '5';
+        campo_total_periodos.max = '8';
+    } else if (campo_natureza.value === 'licenciatura') {
+        campo_total_periodos.min = '8';
+        campo_total_periodos.max = '10';
+    }
+}
+
+function validarInformacoesCursoEditaveis() {
+    const nomeCurso = campo_nome_curso.value.trim();
+    const natureza = campo_natureza.value;
+    const totalPeriodos = Number(campo_total_periodos.value);
+    const minimoPeriodos = Number(campo_total_periodos.min);
+    const maximoPeriodos = Number(campo_total_periodos.max);
+
+    if (!nomeCurso || !natureza || !campo_total_periodos.value) {
+        alert('Preencha nome, natureza e total de periodos do curso.');
+        return false;
+    }
+
+    if (totalPeriodos < minimoPeriodos || totalPeriodos > maximoPeriodos) {
+        alert(`Para ${natureza}, informe uma quantidade de periodos entre ${minimoPeriodos} e ${maximoPeriodos}.`);
+        campo_total_periodos.focus();
+        return false;
+    }
+
+    ppcData.name = nomeCurso;
+    ppcData.nature = natureza;
+    return true;
 }
 
 function obterNomesPrerequisitos(prerequisitos) {
@@ -209,6 +250,77 @@ function atualizarTodosPrerequisitos() {
         const linhas = containerOptativas.querySelectorAll('.div_linha_periodo');
         linhas.forEach(linha => atualizarOpcoesPrerequisito(linha, 0));
     }
+}
+
+// Alteracao PPC: cria periodos vazios quando o total de periodos e aumentado na edicao.
+function criarPeriodoVazioEditavel(numeroPeriodo) {
+    const divPeriodo = document.createElement('div');
+    divPeriodo.className = 'periodo_container';
+    divPeriodo.id = `periodo_${numeroPeriodo}`;
+
+    const nomePeriodo = document.createElement('h3');
+    nomePeriodo.innerText = `${numeroPeriodo}º Período`;
+    divPeriodo.appendChild(nomePeriodo);
+
+    const containerDisciplinas = document.createElement('div');
+    containerDisciplinas.className = 'disciplinas_container';
+    containerDisciplinas.id = `disciplinas_periodo_${numeroPeriodo}`;
+
+    for (let i = 0; i < 3; i++) {
+        adicionarCampoDisciplina(containerDisciplinas, numeroPeriodo);
+    }
+
+    divPeriodo.appendChild(containerDisciplinas);
+
+    const btnAdicionarDisciplina = document.createElement('button');
+    btnAdicionarDisciplina.type = 'button';
+    btnAdicionarDisciplina.className = 'botao_adicionar_disciplina';
+    btnAdicionarDisciplina.innerText = '+ ADICIONAR DISCIPLINA';
+    btnAdicionarDisciplina.addEventListener('click', () => {
+        adicionarCampoDisciplina(containerDisciplinas, numeroPeriodo);
+        atualizarTodosPrerequisitos();
+    });
+
+    divPeriodo.appendChild(btnAdicionarDisciplina);
+    div_campo_config_periodo.insertBefore(divPeriodo, botoes_confirmar);
+}
+
+function ajustarPeriodosPeloTotalEditavel(novoTotalPeriodos) {
+    const totalAtual = ppcData.total_periods;
+    if (novoTotalPeriodos === totalAtual) return true;
+
+    if (novoTotalPeriodos < totalAtual) {
+        const periodosRemovidos = [];
+        for (let i = novoTotalPeriodos + 1; i <= totalAtual; i++) {
+            const container = document.getElementById(`disciplinas_periodo_${i}`);
+            const possuiDados = container && Array.from(container.querySelectorAll('.div_linha_periodo')).some(linha => {
+                return linha.querySelector('.escolha_disciplina').value.trim() || linha.querySelector('.escolha_qtd_horas').value;
+            });
+            if (possuiDados) {
+                periodosRemovidos.push(i);
+            }
+        }
+
+        if (periodosRemovidos.length > 0) {
+            const confirmar = confirm(`Reduzir para ${novoTotalPeriodos} periodos removera as disciplinas dos periodos: ${periodosRemovidos.join(', ')}. Deseja continuar?`);
+            if (!confirmar) {
+                campo_total_periodos.value = totalAtual;
+                return false;
+            }
+        }
+
+        for (let i = novoTotalPeriodos + 1; i <= totalAtual; i++) {
+            document.getElementById(`periodo_${i}`)?.remove();
+        }
+    } else {
+        for (let i = totalAtual + 1; i <= novoTotalPeriodos; i++) {
+            criarPeriodoVazioEditavel(i);
+        }
+    }
+
+    ppcData.total_periods = novoTotalPeriodos;
+    atualizarTodosPrerequisitos();
+    return true;
 }
 
 function preencherPeriodosEDisciplinas(ppc) {
@@ -368,6 +480,23 @@ function adicionarCampoDisciplina(containerDisciplinas, numeroPeriodo) {
 botao_salvar.addEventListener('click', async (evento) => {
     evento.preventDefault();
 
+    if (!validarInformacoesCursoEditaveis()) {
+        return;
+    }
+
+    if (!ajustarPeriodosPeloTotalEditavel(Number(campo_total_periodos.value))) {
+        return;
+    }
+
+    const validacaoPeriodos = validarPreenchimentoPeriodosEdicao();
+    if (!validacaoPeriodos.valido) {
+        alert(validacaoPeriodos.mensagem);
+        if (validacaoPeriodos.campo) {
+            validacaoPeriodos.campo.focus();
+        }
+        return;
+    }
+
     coletarDadosPeriodosAtualizado();
 
     let totalDisciplinas = 0;
@@ -406,6 +535,86 @@ botao_salvar.addEventListener('click', async (evento) => {
 botao_cancelar.addEventListener('click', () => {
     window.location.href = '../pagina_criar_editar_ppcs/criar_editar_ppcs.html';
 });
+
+campo_natureza.addEventListener('change', atualizarLimitesTotalPeriodos);
+
+campo_total_periodos.addEventListener('change', () => {
+    const novoTotalPeriodos = Number(campo_total_periodos.value);
+    if (!novoTotalPeriodos) return;
+    ajustarPeriodosPeloTotalEditavel(novoTotalPeriodos);
+});
+
+// Alteracao PPC: a edicao segue a mesma regra da criacao; toda linha visivel deve ser preenchida ou removida.
+function validarPreenchimentoPeriodosEdicao() {
+    for (let i = 1; i <= ppcData.total_periods; i++) {
+        const containerDisciplinas = document.getElementById(`disciplinas_periodo_${i}`);
+        if (!containerDisciplinas) continue;
+
+        const validacaoPeriodo = validarContainerDisciplinas(containerDisciplinas, i, true);
+        if (!validacaoPeriodo.valido) {
+            return validacaoPeriodo;
+        }
+    }
+
+    const containerOptativas = document.getElementById('disciplinas_periodo_0');
+    if (containerOptativas) {
+        const validacaoOptativas = validarContainerDisciplinas(containerOptativas, 0, false, true);
+        if (!validacaoOptativas.valido) {
+            return validacaoOptativas;
+        }
+    }
+
+    return { valido: true };
+}
+
+function validarContainerDisciplinas(containerDisciplinas, numeroPeriodo, obrigatorio, exigirLinhasExistentes = false) {
+    const linhas = containerDisciplinas.querySelectorAll('.div_linha_periodo');
+    let possuiDisciplinaCompleta = false;
+
+    for (const linha of linhas) {
+        const campoNome = linha.querySelector('.escolha_disciplina');
+        const campoHoras = linha.querySelector('.escolha_qtd_horas');
+        const nomeDisciplina = campoNome.value.trim();
+        const horas = campoHoras.value;
+        const linhaObrigatoria = obrigatorio || exigirLinhasExistentes || Boolean(nomeDisciplina || horas);
+        const horasInvalidas = horas && Number(horas) <= 0;
+
+        if (horasInvalidas) {
+            return {
+                valido: false,
+                campo: campoHoras,
+                mensagem: numeroPeriodo === 0
+                    ? 'A carga horaria da optativa deve ser maior que zero.'
+                    : `A carga horaria de uma disciplina do ${numeroPeriodo}º periodo deve ser maior que zero.`
+            };
+        }
+
+        if (linhaObrigatoria && (!nomeDisciplina || !horas)) {
+            return {
+                valido: false,
+                campo: !nomeDisciplina ? campoNome : campoHoras,
+                mensagem: numeroPeriodo === 0
+                    ? 'Complete nome e carga horaria de todas as optativas ou remova a linha no X.'
+                    : `Complete nome e carga horaria de todas as linhas de disciplina do ${numeroPeriodo}º periodo ou remova a linha no X.`
+            };
+        }
+
+        if (nomeDisciplina && horas) {
+            possuiDisciplinaCompleta = true;
+        }
+    }
+
+    if (obrigatorio && !possuiDisciplinaCompleta) {
+        const primeiroCampoNome = containerDisciplinas.querySelector('.escolha_disciplina');
+        return {
+            valido: false,
+            campo: primeiroCampoNome,
+            mensagem: `Preencha pelo menos uma disciplina completa no ${numeroPeriodo}º periodo.`
+        };
+    }
+
+    return { valido: true };
+}
 
 function coletarDisciplinasDoContainer(containerDisciplinas) {
     const disciplinas = [];

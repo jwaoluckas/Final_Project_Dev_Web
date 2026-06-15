@@ -22,17 +22,21 @@
             
             <div class="info_readonly">
                 <label>Nome do Curso:</label>
-                <p id="info_nome_curso"></p>
+                <input type="text" id="info_nome_curso" class="campo_info_editavel" placeholder="Nome do curso">
             </div>
 
             <div class="info_readonly">
                 <label>Natureza:</label>
-                <p id="info_natureza"></p>
+                <select id="info_natureza" class="campo_info_editavel">
+                    <option value="bacharelado">bacharelado</option>
+                    <option value="tecnologo">tecnologo</option>
+                    <option value="licenciatura">licenciatura</option>
+                </select>
             </div>
 
             <div class="info_readonly">
                 <label>Total de Períodos:</label>
-                <p id="info_periodos"></p>
+                <input type="number" id="info_periodos" class="campo_info_editavel" min="1" placeholder="Total de periodos">
             </div>
 
         </div>
