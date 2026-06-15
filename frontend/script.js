@@ -1,7 +1,10 @@
 const form = document.querySelector('.campo_login_senha');
 const link_senha = document.getElementById('esqueceu_a_senha');
 const checkbox_mostrar_senha = document.getElementById('mostrar_senha');
-const API_BASE_URL = 'http://localhost:3000/api';
+const isLocalhost = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost';
+const API_BASE_URL = isLocalhost
+    ? 'http://localhost:3000/api'
+    : 'https://api-gerador-ppcs.onrender.com/api';
 
 //remove o bloco dinamico de recuperacao para nao duplicar mensagens na tela.
 function removerAvisoSenha() {

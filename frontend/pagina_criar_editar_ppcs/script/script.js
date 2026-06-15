@@ -1,5 +1,7 @@
-// ========== CONFIGURAÇÃO INICIAL ==========
-const API_BASE_URL = 'http://localhost:3000/api'; // Mantem a mesma API usada no login.
+const isLocalhost = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost';
+const API_BASE_URL = isLocalhost
+    ? 'http://localhost:3000/api'
+    : 'https://api-gerador-ppcs.onrender.com/api';
 
 const main = document.querySelector('main');
 const espaco_cards_ppcs = document.querySelector('.espaco_cards_ppcs');
