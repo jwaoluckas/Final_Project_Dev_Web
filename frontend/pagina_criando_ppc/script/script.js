@@ -12,6 +12,7 @@ const botao_prox_etapa = document.getElementById('botao_prox_etapa1');
 const botao_confirmar = document.getElementById('confirmar_ppc');
 const botao_voltar = document.getElementById('voltar_etapa1');
 const botoes_confirmar_vizuPDF = document.querySelector('.botoes');
+let periodosRenderizados = false;
 
 let ppcData = {
     name: '',
@@ -67,7 +68,35 @@ tipo_curso.addEventListener('change', () => {
         escolha_qtd_periodos.min = '8';
         escolha_qtd_periodos.max = '10';
     }
+
+    validarFaixaQuantidadePeriodos(false);
 });
+
+escolha_qtd_periodos.addEventListener('change', () => {
+    validarFaixaQuantidadePeriodos(true);
+});
+
+function validarFaixaQuantidadePeriodos(exibirAlerta = true) {
+    if (!tipo_curso.value || !escolha_qtd_periodos.value) {
+        return true;
+    }
+
+    const totalPeriodos = Number(escolha_qtd_periodos.value);
+    const minimoPeriodos = Number(escolha_qtd_periodos.min);
+    const maximoPeriodos = Number(escolha_qtd_periodos.max);
+
+    if (totalPeriodos < minimoPeriodos || totalPeriodos > maximoPeriodos) {
+        if (exibirAlerta) {
+            alert(`Para ${tipo_curso.value}, informe uma quantidade de períodos entre ${minimoPeriodos} e ${maximoPeriodos}.`);
+        }
+
+        escolha_qtd_periodos.value = '';
+        escolha_qtd_periodos.focus();
+        return false;
+    }
+
+    return true;
+}
 
 botao_prox_etapa.addEventListener('click', (evento) => {
     evento.preventDefault();
@@ -77,16 +106,45 @@ botao_prox_etapa.addEventListener('click', (evento) => {
         return;
     }
 
+    if (!validarFaixaQuantidadePeriodos(true)) {
+        return;
+    }
+
+    const novoTotalPeriodos = Number(escolha_qtd_periodos.value);
+    const estadoAtualPeriodos = capturarEstadoAtualPeriodos();
+
+    if (periodosRenderizados && novoTotalPeriodos < ppcData.total_periods) {
+        const periodosComDados = [];
+
+        for (let i = novoTotalPeriodos + 1; i <= ppcData.total_periods; i++) {
+            const disciplinasPeriodo = estadoAtualPeriodos.get(i) || [];
+            const possuiDados = disciplinasPeriodo.some(disciplina => disciplina.name || disciplina.hours);
+
+            if (possuiDados) {
+                periodosComDados.push(i);
+            }
+        }
+
+        if (periodosComDados.length > 0) {
+            const confirmar = confirm(`Reduzir para ${novoTotalPeriodos} períodos removerá as disciplinas dos períodos: ${periodosComDados.join(', ')}. Deseja continuar?`);
+
+            if (!confirmar) {
+                escolha_qtd_periodos.value = ppcData.total_periods;
+                return;
+            }
+        }
+    }
+
     ppcData.name = nome_curso.value;
     ppcData.nature = tipo_curso.value;
-    ppcData.total_periods = Number(escolha_qtd_periodos.value);
+    ppcData.total_periods = novoTotalPeriodos;
     ppcData.periods = [];
     disciplinesMap.clear();
 
-    div_campo_config_curso.style.display = 'none';
     div_campo_config_periodo.style.display = 'flex';
 
-    gerarCamposPeriodos();
+    gerarCamposPeriodos(estadoAtualPeriodos);
+    periodosRenderizados = true;
 });
 
 if (botao_voltar) {
@@ -234,7 +292,45 @@ function atualizarTodosPrerequisitos() {
     }
 }
 
-function gerarCamposPeriodos() {
+function capturarEstadoAtualPeriodos() {
+    const estadoPeriodos = new Map();
+
+    if (!periodosRenderizados) {
+        return estadoPeriodos;
+    }
+
+    for (let i = 1; i <= ppcData.total_periods; i++) {
+        const containerDisciplinas = document.getElementById(`disciplinas_periodo_${i}`);
+        if (!containerDisciplinas) continue;
+
+        estadoPeriodos.set(i, capturarDisciplinasVisiveis(containerDisciplinas));
+    }
+
+    const containerOptativas = document.getElementById('disciplinas_periodo_0');
+    if (containerOptativas) {
+        estadoPeriodos.set(0, capturarDisciplinasVisiveis(containerOptativas));
+    }
+
+    return estadoPeriodos;
+}
+
+function capturarDisciplinasVisiveis(containerDisciplinas) {
+    const linhas = containerDisciplinas.querySelectorAll('.div_linha_periodo');
+
+    return Array.from(linhas).map(linha => {
+        const campoPrerequisito = linha.querySelector('.escolha_prerequisito');
+
+        return {
+            name: linha.querySelector('.escolha_disciplina').value,
+            hours: linha.querySelector('.escolha_qtd_horas').value,
+            prerequisites: campoPrerequisito
+                ? Array.from(campoPrerequisito.selectedOptions).map(option => option.value)
+                : []
+        };
+    });
+}
+
+function gerarCamposPeriodos(estadoAtualPeriodos = new Map()) {
     const periodosExistentes = div_campo_config_periodo.querySelectorAll('.periodo_container');
     periodosExistentes.forEach(p => p.remove());
 
@@ -252,8 +348,16 @@ function gerarCamposPeriodos() {
         containerDisciplinas.className = 'disciplinas_container';
         containerDisciplinas.id = `disciplinas_periodo_${numeroPeriodo}`;
 
-        for (let j = 0; j < 3; j++) {
-            adicionarCampoDisciplina(containerDisciplinas, numeroPeriodo);
+        const disciplinasSalvas = estadoAtualPeriodos.get(numeroPeriodo) || [];
+
+        if (disciplinasSalvas.length > 0) {
+            disciplinasSalvas.forEach(disciplina => {
+                adicionarCampoDisciplina(containerDisciplinas, numeroPeriodo, disciplina);
+            });
+        } else {
+            for (let j = 0; j < 3; j++) {
+                adicionarCampoDisciplina(containerDisciplinas, numeroPeriodo);
+            }
         }
 
         divPeriodo.appendChild(containerDisciplinas);
@@ -271,11 +375,17 @@ function gerarCamposPeriodos() {
         div_campo_config_periodo.insertBefore(divPeriodo, botoes_confirmar_vizuPDF);
     }
 
-    gerarCampoOptativas();
+    gerarCampoOptativas(estadoAtualPeriodos);
+    atualizarTodosPrerequisitos();
+}
+
+function sincronizarDadosCursoEditaveis() {
+    ppcData.name = nome_curso.value.trim();
+    ppcData.nature = tipo_curso.value;
 }
 
 // Cria campo optativas como opcional.
-function gerarCampoOptativas() {
+function gerarCampoOptativas(estadoAtualPeriodos = new Map()) {
     const divPeriodo = document.createElement('div');
     divPeriodo.className = 'periodo_container';
     divPeriodo.id = 'periodo_0';
@@ -288,7 +398,16 @@ function gerarCampoOptativas() {
     containerDisciplinas.className = 'disciplinas_container';
     containerDisciplinas.id = 'disciplinas_periodo_0';
 
-    adicionarCampoDisciplina(containerDisciplinas, 0);
+    const optativasSalvas = estadoAtualPeriodos.get(0) || [];
+
+    if (optativasSalvas.length > 0) {
+        optativasSalvas.forEach(disciplina => {
+            adicionarCampoDisciplina(containerDisciplinas, 0, disciplina);
+        });
+    } else {
+        adicionarCampoDisciplina(containerDisciplinas, 0);
+    }
+
     divPeriodo.appendChild(containerDisciplinas);
 
     const btnAdicionarDisciplina = document.createElement('button');
@@ -304,7 +423,7 @@ function gerarCampoOptativas() {
     div_campo_config_periodo.insertBefore(divPeriodo, botoes_confirmar_vizuPDF);
 }
 
-function adicionarCampoDisciplina(containerDisciplinas, numeroPeriodo) {
+function adicionarCampoDisciplina(containerDisciplinas, numeroPeriodo, disciplina = null) {
     const divLinhaPeriodo = document.createElement('div');
     divLinhaPeriodo.className = 'div_linha_periodo';
 
@@ -312,6 +431,7 @@ function adicionarCampoDisciplina(containerDisciplinas, numeroPeriodo) {
     campoDisciplina.type = 'text';
     campoDisciplina.className = 'escolha_disciplina';
     campoDisciplina.placeholder = 'Nome da disciplina';
+    campoDisciplina.value = disciplina?.name || '';
     campoDisciplina.addEventListener('input', atualizarTodosPrerequisitos);
 
     const campoHoras = document.createElement('input');
@@ -319,6 +439,7 @@ function adicionarCampoDisciplina(containerDisciplinas, numeroPeriodo) {
     campoHoras.className = 'escolha_qtd_horas';
     campoHoras.placeholder = 'Horas';
     campoHoras.min = '1';
+    campoHoras.value = disciplina?.hours || '';
     campoHoras.addEventListener('input', atualizarTodosPrerequisitos);
 
     const btnRemover = document.createElement('button');
@@ -336,11 +457,39 @@ function adicionarCampoDisciplina(containerDisciplinas, numeroPeriodo) {
 
     containerDisciplinas.appendChild(divLinhaPeriodo);
     atualizarOpcoesPrerequisito(divLinhaPeriodo, numeroPeriodo);
+
+    if (disciplina?.prerequisites?.length) {
+        const campoPrerequisito = divLinhaPeriodo.querySelector('.escolha_prerequisito');
+        if (campoPrerequisito) {
+            Array.from(campoPrerequisito.options).forEach(option => {
+                option.selected = disciplina.prerequisites.includes(option.value);
+            });
+            atualizarTextoContagemPrerequisito(campoPrerequisito);
+        }
+    }
 }
 
 // Envia o PPC completo para o backend ao clicar, incluindo periodos, optativas e pré-requisitos.
 botao_confirmar.addEventListener('click', async (evento) => {
     evento.preventDefault();
+
+    if (!periodosRenderizados) {
+        alert('Clique em PRÓXIMA ETAPA para gerar os períodos antes de confirmar.');
+        return;
+    }
+
+    if (!tipo_curso.value || !nome_curso.value.trim() || !escolha_qtd_periodos.value) {
+        alert('Por favor, preencha todos os campos da Etapa 1');
+        return;
+    }
+
+    if (Number(escolha_qtd_periodos.value) !== ppcData.total_periods) {
+        alert('A quantidade de períodos foi alterada. Clique em PRÓXIMA ETAPA novamente para atualizar os períodos.');
+        escolha_qtd_periodos.focus();
+        return;
+    }
+
+    sincronizarDadosCursoEditaveis();
 
     const validacaoPeriodos = validarPreenchimentoPeriodosObrigatorios();
     if (!validacaoPeriodos.valido) {

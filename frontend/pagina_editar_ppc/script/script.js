@@ -74,6 +74,30 @@ function atualizarLimitesTotalPeriodos() {
         campo_total_periodos.min = '8';
         campo_total_periodos.max = '10';
     }
+
+    validarFaixaTotalPeriodosEditavel(false);
+}
+
+function validarFaixaTotalPeriodosEditavel(exibirAlerta = true) {
+    if (!campo_natureza.value || !campo_total_periodos.value) {
+        return true;
+    }
+
+    const totalPeriodos = Number(campo_total_periodos.value);
+    const minimoPeriodos = Number(campo_total_periodos.min);
+    const maximoPeriodos = Number(campo_total_periodos.max);
+
+    if (totalPeriodos < minimoPeriodos || totalPeriodos > maximoPeriodos) {
+        if (exibirAlerta) {
+            alert(`Para ${campo_natureza.value}, informe uma quantidade de períodos entre ${minimoPeriodos} e ${maximoPeriodos}.`);
+        }
+
+        campo_total_periodos.value = ppcData.total_periods || '';
+        campo_total_periodos.focus();
+        return false;
+    }
+
+    return true;
 }
 
 function validarInformacoesCursoEditaveis() {
@@ -84,13 +108,11 @@ function validarInformacoesCursoEditaveis() {
     const maximoPeriodos = Number(campo_total_periodos.max);
 
     if (!nomeCurso || !natureza || !campo_total_periodos.value) {
-        alert('Preencha nome, natureza e total de periodos do curso.');
+        alert('Preencha nome, natureza e total de períodos do curso.');
         return false;
     }
 
-    if (totalPeriodos < minimoPeriodos || totalPeriodos > maximoPeriodos) {
-        alert(`Para ${natureza}, informe uma quantidade de periodos entre ${minimoPeriodos} e ${maximoPeriodos}.`);
-        campo_total_periodos.focus();
+    if (!validarFaixaTotalPeriodosEditavel(true)) {
         return false;
     }
 
@@ -542,6 +564,10 @@ botao_cancelar.addEventListener('click', () => {
 campo_natureza.addEventListener('change', atualizarLimitesTotalPeriodos);
 
 campo_total_periodos.addEventListener('change', () => {
+    if (!validarFaixaTotalPeriodosEditavel(true)) {
+        return;
+    }
+
     const novoTotalPeriodos = Number(campo_total_periodos.value);
     if (!novoTotalPeriodos) return;
     ajustarPeriodosPeloTotalEditavel(novoTotalPeriodos);
