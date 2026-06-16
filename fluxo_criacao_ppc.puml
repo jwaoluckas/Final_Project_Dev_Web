@@ -1,0 +1,33 @@
+@startuml
+!pragma umlencoding UTF-8
+
+title Diagrama de Sequência - Criação de PPC
+
+skinparam shadowing false
+skinparam sequence {
+  ActorFontColor Black
+  ParticipantFontColor Black
+  ParticipantBackgroundColor White
+  ParticipantBorderColor Black
+  DatabaseFontColor Black
+  DatabaseBackgroundColor White
+  DatabaseBorderColor Black
+}
+
+actor Usuario as "Usuário"
+participant Frontend as "Frontend"
+participant API as "API Backend"
+database Banco as "PostgreSQL"
+
+Usuario -> Frontend : Informa dados do curso
+Frontend -> Frontend : Gera períodos e campos
+Usuario -> Frontend : Preenche disciplinas e pré-requisitos
+Frontend -> Frontend : Valida campos obrigatórios
+Frontend -> API : POST /api/ppc com JWT
+API -> API : Valida usuário autenticado
+API -> Banco : Salva curso, períodos, disciplinas e pré-requisitos
+Banco --> API : Confirma transação
+API --> Frontend : Retorna PPC criado
+Frontend --> Usuario : Exibe confirmação
+
+@enduml

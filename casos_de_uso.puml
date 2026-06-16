@@ -1,0 +1,46 @@
+@startuml
+title Diagrama de Casos de Uso - Gerador de PPCs
+
+left to right direction
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor White
+  BorderColor Black
+  FontColor Black
+  FontSize 13
+}
+skinparam actor {
+  FontColor Black
+  FontSize 12
+}
+
+actor "Usuário autenticado" as Usuario
+actor "Usuário não autenticado" as Visitante
+
+rectangle "Gerador de PPCs" {
+  usecase UCLogin as "Autenticar usuário"
+  usecase UCForgot as "Recuperar senha"
+  usecase UCCriar as "Criar PPC"
+  usecase UCEditar as "Editar PPC"
+  usecase UCExcluir as "Excluir PPC"
+  usecase UCDisciplinas as "Cadastrar disciplinas"
+  usecase UCPrereq as "Selecionar pré-requisitos"
+  usecase UCOptativas as "Gerenciar optativas"
+  usecase UCVisualizar as "Visualizar PPC"
+  usecase UCPDF as "Baixar PDF"
+}
+
+Visitante --> UCLogin
+Visitante --> UCForgot
+Usuario --> UCCriar
+Usuario --> UCEditar
+Usuario --> UCExcluir
+Usuario --> UCVisualizar
+
+UCCriar .> UCDisciplinas : <<include>>
+UCEditar .> UCDisciplinas : <<include>>
+UCPrereq .> UCDisciplinas : <<extend>>
+UCOptativas .> UCDisciplinas : <<extend>>
+UCPDF .> UCVisualizar : <<extend>>
+
+@enduml

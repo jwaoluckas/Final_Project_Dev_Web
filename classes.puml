@@ -1,0 +1,60 @@
+@startuml
+title Diagrama de Classes Conceitual - Gerador de PPCs
+
+left to right direction
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+class User {
+  +id : uuid
+  +email : string
+  +password_hash : string
+  +created_at : datetime
+  +updated_at : datetime
+}
+
+class Course {
+  +id : uuid
+  +user_id : uuid
+  +name : string
+  +nature : string
+  +total_periods : int
+  +created_at : datetime
+  +updated_at : datetime
+}
+
+class Period {
+  +id : uuid
+  +course_id : uuid
+  +period_number : int
+}
+
+class Discipline {
+  +id : uuid
+  +period_id : uuid
+  +name : string
+  +hours : int
+}
+
+class DisciplinePrerequisite {
+  +id : uuid
+  +discipline_id : uuid
+  +prerequisite_id : uuid
+}
+
+class PasswordResetToken {
+  +id : uuid
+  +user_id : uuid
+  +token_hash : string
+  +expires_at : datetime
+  +used_at : datetime
+}
+
+User "1" -- "0..*" Course : possui
+Course "1" -- "1..*" Period : organiza
+Period "1" -- "0..*" Discipline : contém
+Discipline "1" -- "0..*" DisciplinePrerequisite : depende
+DisciplinePrerequisite "0..*" -- "1" Discipline : pré-requisito
+User "1" -- "0..*" PasswordResetToken : solicita
+
+@enduml

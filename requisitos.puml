@@ -1,0 +1,51 @@
+@startuml
+title Mapa de Requisitos - Gerador de PPCs
+
+left to right direction
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+rectangle "Gerador de PPCs" as Sistema
+
+package "Requisitos Funcionais" as RF {
+  rectangle "RF01\nGerenciamento de PPCs\nCriar, listar, editar,\nvisualizar e excluir PPCs" as RF01
+  rectangle "RF02\nPré-requisitos\nAssociar disciplinas a\num ou mais pré-requisitos" as RF02
+  rectangle "RF03\nCálculo de horas\nExibir carga horária por\nperíodo e total" as RF03
+  rectangle "RF04\nExportação em PDF\nBaixar o PPC em formato\nde fluxograma" as RF04
+  rectangle "RF05\nRecuperação de senha\nRedefinir senha por link\nenviado por e-mail" as RF05
+  rectangle "RF06\nIsolamento por usuário\nExibir apenas PPCs do\nusuário autenticado" as RF06
+}
+
+package "Requisitos Não Funcionais" as RNF {
+  rectangle "RNF01\nControle de acesso\nRotas internas protegidas\npor JWT" as RNF01
+  rectangle "RNF02\nInterface desktop\nFoco principal em uso\nno computador" as RNF02
+  rectangle "RNF03\nPersistência relacional\nUso de PostgreSQL" as RNF03
+  rectangle "RNF04\nContainerização\nExecução com Docker\nCompose" as RNF04
+  rectangle "RNF05\nManutenibilidade\nBackend em camadas" as RNF05
+  rectangle "RNF06\nSegurança de senha\nHash de senha e token\nde recuperação" as RNF06
+  rectangle "RNF07\nAcessibilidade de navegação\nNavegação básica por\nteclado com HTML nativo" as RNF07
+}
+
+Sistema --> RF01
+Sistema --> RF02
+Sistema --> RF03
+Sistema --> RF04
+Sistema --> RF05
+Sistema --> RF06
+
+Sistema --> RNF01
+Sistema --> RNF02
+Sistema --> RNF03
+Sistema --> RNF04
+Sistema --> RNF05
+Sistema --> RNF06
+Sistema --> RNF07
+
+RF01 ..> RNF03 : depende de
+RF01 ..> RNF01 : protegido por
+RF05 ..> RNF06 : exige
+RF06 ..> RNF01 : reforça
+RNF04 ..> RNF05 : apoia
+RNF07 ..> RNF02 : complementa
+
+@enduml

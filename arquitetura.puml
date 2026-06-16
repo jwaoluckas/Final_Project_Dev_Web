@@ -1,0 +1,37 @@
+@startuml
+title Arquitetura do Gerador de PPCs
+
+skinparam componentStyle rectangle
+skinparam shadowing false
+
+actor "Usuário" as Usuario
+
+node "Frontend Estático\nHTML, CSS, JavaScript" as Frontend {
+  component "Login e Recuperação\nde Senha" as Login
+  component "Gerenciamento\nde PPCs" as Gerenciamento
+  component "Criação e Edição\nde PPCs" as Criacao
+  component "Visualização e\nPDF" as PDF
+}
+
+node "Backend\nNode.js + Express" as Backend {
+  component "Routes" as Routes
+  component "Controllers" as Controllers
+  component "Services" as Services
+  component "Repositories" as Repositories
+  component "Middlewares\nJWT e Erros" as Middlewares
+}
+
+database "PostgreSQL" as DB
+cloud "Mailtrap / SMTP" as SMTP
+
+Usuario --> Frontend
+Frontend --> Routes : HTTP / API REST
+Routes --> Middlewares
+Routes --> Controllers
+Controllers --> Services
+Services --> Repositories
+Repositories --> DB
+Services --> SMTP : envio de recuperação
+Frontend --> PDF : jsPDF / html2canvas
+
+@enduml
