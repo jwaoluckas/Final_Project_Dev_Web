@@ -24,7 +24,7 @@ main{
 
 .espaco_cards_ppcs{
     display: flex;
-    overflow: scroll;
+    flex-wrap: wrap;
     justify-content: space-between;
     background-color: transparent;
     width: 60vw;
@@ -38,11 +38,12 @@ main{
     padding: 1vh 2vw;
     background-color: ghostwhite;
     color: #2F9E41;
+    width: 50vh;
     font-weight: 500;
     font-size: 15px;
     border-bottom: 1vh solid #2F9E41;
     border-radius: 10px;
-    margin: 1vh;
+    margin: 1vh 0;
     box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.3);
 }
 
