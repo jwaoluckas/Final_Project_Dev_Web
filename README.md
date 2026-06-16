@@ -1,4 +1,4 @@
-﻿# Gerador de PPCs
+# Gerador de PPCs
 
 Sistema web para criação, edição, visualização e exportação de PPCs (Projetos Pedagógicos de Curso), desenvolvido como projeto acadêmico do curso de Engenharia de Software do IFPE Campus Belo Jardim.
 
@@ -123,260 +123,15 @@ Final_Project_Dev_Web/
 └── README.md
 ```
 
-## Requisitos Funcionais
+## Documentação e Diagramas
 
-| ID | Nome | Prioridade | Descrição |
-| --- | --- | --- | --- |
-| RF01 | Gerenciamento de PPCs | Alta | O sistema deve permitir criar, listar, editar, visualizar e excluir PPCs. |
-| RF02 | Pré-requisitos de disciplinas | Alta | O sistema deve permitir associar uma disciplina a um ou mais pré-requisitos cadastrados em períodos anteriores. |
-| RF03 | Cálculo de horas | Média | O sistema deve calcular e exibir a carga horária por período e a carga horária total da matriz. |
-| RF04 | Exportação em PDF | Baixa | O sistema deve disponibilizar o download do PPC em PDF no formato de fluxograma. |
-| RF05 | Recuperação de senha | Média | O sistema deve permitir redefinir a senha por meio de link enviado por e-mail. |
-| RF06 | Isolamento por usuário | Alta | O sistema deve exibir para cada usuário apenas os PPCs vinculados a sua conta. |
+Os diagramas do projeto estão disponíveis em arquivos `.puml` na raiz do repositório para exportação em PNG por ferramentas como PlantUML, VS Code ou draw.io:
 
-## Requisitos Não Funcionais
-
-| ID | Nome | Prioridade | Descrição |
-| --- | --- | --- | --- |
-| RNF01 | Controle de acesso | Alta | O sistema deve restringir o acesso às telas internas por autenticação JWT. |
-| RNF02 | Interface desktop | Média | O sistema tem foco principal de uso em ambiente desktop. |
-| RNF03 | Persistência relacional | Alta | Os dados devem ser persistidos em PostgreSQL. |
-| RNF04 | Containerização | Média | O sistema deve poder ser executado com Docker Compose. |
-| RNF05 | Manutenibilidade | Média | O backend deve manter separação entre rotas, controladores, serviços e repositórios. |
-| RNF06 | Segurança de senha | Alta | As senhas devem ser armazenadas com hash e os tokens de recuperação não devem ser gravados em texto puro. |
-| RNF07 | Acessibilidade de navegação | Média | O sistema deve permitir navegação básica por teclado por meio de elementos HTML nativos. |
-
-## Casos de Uso
-
-### UC01 - Cadastrar Disciplinas
-
-**Ator:** Usuário autenticado  
-**Resumo:** O usuário cadastra disciplinas em um PPC.
-
-**Pré-condições:**
-
-- O usuário deve estar autenticado.
-- O PPC deve ter sido criado ou estar em edição.
-
-**Fluxo principal:**
-
-1. O usuário acessa a tela de criação ou edição do PPC.
-2. O sistema exibe os períodos definidos para o curso.
-3. O usuário informa nome e carga horária da disciplina.
-4. A partir do segundo período, o sistema permite selecionar pré-requisitos com base nas disciplinas de períodos anteriores.
-5. O usuário confirma o PPC.
-6. O sistema salva disciplinas, períodos e pré-requisitos no banco de dados.
-
-**Fluxo alternativo: campo obrigatório não preenchido**
-
-1. O usuário tenta salvar uma linha de disciplina visível sem nome ou carga horária.
-2. O sistema informa que existem campos obrigatórios pendentes.
-3. O usuário preenche a disciplina ou remove a linha.
-4. O sistema permite salvar após a correção.
-
-**Pós-condições:**
-
-- As disciplinas ficam vinculadas ao PPC.
-- Os pré-requisitos selecionados ficam associados as disciplinas correspondentes.
-
-### UC02 - Criar PPC
-
-**Ator:** Usuário autenticado  
-**Resumo:** O usuário cria um novo PPC para um curso.
-
-**Pré-condições:**
-
-- O usuário deve estar autenticado.
-
-**Fluxo principal:**
-
-1. O usuário acessa a opção de criar PPC.
-2. O sistema solicita natureza do curso, nome do curso e quantidade de períodos.
-3. O usuário preenche as informações iniciais.
-4. O sistema gera os blocos de períodos.
-5. O usuário cadastra as disciplinas obrigatórias e, se necessário, optativas.
-6. O usuário confirma o cadastro.
-7. O sistema salva o PPC e retorna para a área de gerenciamento.
-
-**Fluxo alternativo: dados iniciais incompletos**
-
-1. O usuário tenta avançar sem preencher campos obrigatórios.
-2. O sistema informa que faltam dados.
-3. O usuário corrige as informações.
-4. O fluxo principal continua.
-
-**Pós-condições:**
-
-- O PPC fica salvo e disponível para listagem, edição, visualização e exclusão.
-
-### UC03 - Autenticar Usuário
-
-**Ator:** Usuário cadastrado  
-**Resumo:** O usuário realiza login para acessar o sistema.
-
-**Fluxo principal:**
-
-1. O usuário informa e-mail e senha.
-2. O backend valida as credenciais.
-3. O sistema gera um token JWT.
-4. O frontend armazena o token e libera o acesso às telas internas.
-
-**Fluxo alternativo: credenciais inválidas**
-
-1. O backend rejeita as credenciais.
-2. O sistema exibe mensagem de erro.
-3. O usuário pode tentar novamente.
-
-### UC04 - Recuperar Senha
-
-**Ator:** Usuário cadastrado  
-**Resumo:** O usuário solicita redefinição de senha por e-mail.
-
-**Fluxo principal:**
-
-1. O usuário clica em "Esqueci minha senha".
-2. O usuário informa o e-mail cadastrado.
-3. O backend gera token de recuperação e envia link por SMTP/Mailtrap.
-4. O usuário acessa o link recebido.
-5. O usuário informa a nova senha.
-6. O backend valida o token e atualiza o hash da senha no banco.
-
-**Pós-condições:**
-
-- A senha anterior deixa de funcionar.
-- O usuário consegue autenticar com a nova senha.
-
-### UC05 - Visualizar e Baixar PPC em PDF
-
-**Ator:** Usuário autenticado  
-**Resumo:** O usuário visualiza a matriz curricular e baixa o PPC em PDF.
-
-**Fluxo principal:**
-
-1. O usuário acessa a opção de visualizar PPC.
-2. O sistema carrega os dados do PPC.
-3. O frontend monta a visualização da matriz curricular.
-4. O usuário clica em baixar PDF.
-5. O sistema gera o arquivo em formato de fluxograma.
-
-## Diagrama de Casos de Uso
-
-```mermaid
-flowchart TB
-    Usuario((Usuario autenticado))
-
-    UCLogin[Autenticar usuário]
-    UCForgot[Recuperar senha]
-    UCCriar[Criar PPC]
-    UCEditar[Editar PPC]
-    UCExcluir[Excluir PPC]
-    UCDisciplinas[Cadastrar disciplinas]
-    UCPrereq[Selecionar pré-requisitos]
-    UCOptativas[Gerenciar optativas]
-    UCPDF[Visualizar e baixar PDF]
-
-    Usuario --> UCLogin
-    Usuario --> UCForgot
-    Usuario --> UCCriar
-    Usuario --> UCEditar
-    Usuario --> UCExcluir
-    Usuario --> UCDisciplinas
-    Usuario --> UCPrereq
-    Usuario --> UCOptativas
-    Usuario --> UCPDF
-
-    UCCriar --> UCDisciplinas
-    UCEditar --> UCDisciplinas
-    UCDisciplinas --> UCPrereq
-```
-
-## Diagrama de Classes Conceitual
-
-```mermaid
-classDiagram
-    class User {
-        +uuid id
-        +string email
-        +string password_hash
-        +datetime created_at
-        +datetime updated_at
-    }
-
-    class Course {
-        +uuid id
-        +uuid user_id
-        +string name
-        +string nature
-        +int total_periods
-        +datetime created_at
-        +datetime updated_at
-    }
-
-    class Period {
-        +uuid id
-        +uuid course_id
-        +int period_number
-    }
-
-    class Discipline {
-        +uuid id
-        +uuid period_id
-        +string name
-        +int hours
-    }
-
-    class DisciplinePrerequisite {
-        +uuid id
-        +uuid discipline_id
-        +uuid prerequisite_id
-    }
-
-    class PasswordResetToken {
-        +uuid id
-        +uuid user_id
-        +string token_hash
-        +datetime expires_at
-        +datetime used_at
-    }
-
-    User "1" --> "0..*" Course
-    Course "1" --> "1..*" Period
-    Period "1" --> "0..*" Discipline
-    Discipline "1" --> "0..*" DisciplinePrerequisite
-    DisciplinePrerequisite "0..*" --> "1" Discipline
-    User "1" --> "0..*" PasswordResetToken
-```
-
-## Fluxo de Criação de PPC
-
-```mermaid
-sequenceDiagram
-    actor Usuario
-    participant Frontend
-    participant API
-    participant Banco
-
-    Usuario->>Frontend: Informa dados do curso
-    Frontend->>Frontend: Gera períodos e campos de disciplinas
-    Usuario->>Frontend: Preenche disciplinas e pré-requisitos
-    Frontend->>Frontend: Valida campos obrigatorios
-    Frontend->>API: POST /api/ppc com JWT
-    API->>API: Valida usuário autenticado
-    API->>Banco: Salva curso, períodos, disciplinas e pré-requisitos
-    Banco-->>API: Confirma transação
-    API-->>Frontend: Retorna PPC criado
-    Frontend-->>Usuario: Exibe confirmação
-```
-
-## Diagramas em PlantUML
-
-Os diagramas também estao disponíveis em arquivos `.puml` na raiz do repositório para exportação em PNG por ferramentas como PlantUML, VS Code ou draw.io:
-
-- [`arquitetura.puml`](arquitetura.puml)
-- [`requisitos.puml`](requisitos.puml)
-- [`casos_de_uso.puml`](casos_de_uso.puml)
-- [`classes.puml`](classes.puml)
-- [`fluxo_criação_ppc.puml`](fluxo_criacao_ppc.puml)
+- [`arquitetura.puml`](arquitetura.puml): visão geral da arquitetura da aplicação.
+- [`requisitos.puml`](requisitos.puml): mapa visual dos requisitos funcionais e não funcionais.
+- [`casos_de_uso.puml`](casos_de_uso.puml): diagrama de casos de uso do sistema.
+- [`classes.puml`](classes.puml): diagrama de classes conceitual.
+- [`fluxo_criacao_ppc.puml`](fluxo_criacao_ppc.puml): diagrama de sequência do fluxo de criação de PPC.
 
 ## Banco de Dados
 
@@ -402,7 +157,7 @@ Tabelas principais:
 
 ### Autenticação
 
-| Metodo | Rota | Descrição |
+| Método | Rota | Descrição |
 | --- | --- | --- |
 | `POST` | `/api/auth/login` | Autentica usuário e retorna JWT. |
 | `POST` | `/api/auth/forgot-password` | Solicita link de recuperação de senha. |
@@ -413,19 +168,19 @@ Tabelas principais:
 
 Todas as rotas de PPC exigem JWT.
 
-| Metodo | Rota | Descrição |
+| Método | Rota | Descrição |
 | --- | --- | --- |
 | `POST` | `/api/ppc` | Cria um PPC. |
 | `GET` | `/api/ppc` | Lista PPCs do usuário autenticado. |
-| `GET` | `/api/ppc/:id` | Busca um PPC especifico do usuário autenticado. |
+| `GET` | `/api/ppc/:id` | Busca um PPC específico do usuário autenticado. |
 | `PUT` | `/api/ppc/:id` | Atualiza um PPC. |
 | `DELETE` | `/api/ppc/:id` | Exclui um PPC. |
 
 ### Saúde da API
 
-| Metodo | Rota | Descrição |
+| Método | Rota | Descrição |
 | --- | --- | --- |
-| `GET` | `/health` | Verifica se o backend esta ativo. |
+| `GET` | `/health` | Verifica se o backend está ativo. |
 
 ## Como Rodar Localmente
 
@@ -453,7 +208,7 @@ Entre na pasta do projeto:
 cd Final_Project_Dev_Web
 ```
 
-Se voce já tiver o projeto clonado, apenas entre na pasta:
+Se você já tiver o projeto clonado, apenas entre na pasta:
 
 ```bash
 cd caminho/para/Final_Project_Dev_Web
@@ -481,25 +236,7 @@ Crie o arquivo `.env` com base no exemplo:
 copy .env.example .env
 ```
 
-Exemplo de configuração:
-
-```env
-PORT=3000
-DATABASE_URL=postgres://postgres:12345678@localhost:5432/gerador_ppcs
-JWT_SECRET=troque_este_segredo_por_um_valor_seguro
-JWT_EXPIRES_IN=1h
-ADMIN_EMAIL=marcelo513.ma@outlook.com
-ADMIN_PASSWORD=@dmin123
-SMTP_HOST=sandbox.smtp.mailtrap.io
-SMTP_PORT=2525
-SMTP_USER=usuario_smtp_do_mailtrap
-SMTP_PASS=senha_smtp_do_mailtrap
-SMTP_FROM=Gerador de PPCs <no-reply@gerador-ppcs.local>
-SMTP_REJECT_UNAUTHORIZED=true
-PASSWORD_RESET_BASE_URL=http://127.0.0.1:5500/frontend
-```
-
-O arquivo `.env` não deve ser enviado para o GitHub.
+As variáveis necessárias estão documentadas em [`backend/.env.example`](backend/.env.example). Copie esse arquivo para `.env` e ajuste os valores conforme seu ambiente local. O arquivo `.env` não deve ser enviado para o GitHub.
 
 ### 4. Instalar dependências e preparar backend
 
@@ -706,23 +443,7 @@ O frontend possui configuração dinâmica da URL da API:
 - em ambiente local, usa `http://localhost:3000/api`;
 - em ambiente online, usa `https://api-gerador-ppcs.onrender.com/api`.
 
-No Render ou em qualquer outro provedor, configure as variáveis de ambiente do backend:
-
-```env
-PORT=3000
-DATABASE_URL=postgres://usuario:senha@host:porta/banco
-JWT_SECRET=valor_seguro
-JWT_EXPIRES_IN=1h
-ADMIN_EMAIL=email_inicial
-ADMIN_PASSWORD=senha_inicial
-SMTP_HOST=sandbox.smtp.mailtrap.io
-SMTP_PORT=2525
-SMTP_USER=usuario_smtp
-SMTP_PASS=senha_smtp
-SMTP_FROM=Gerador de PPCs <no-reply@gerador-ppcs.local>
-SMTP_REJECT_UNAUTHORIZED=true
-PASSWORD_RESET_BASE_URL=https://url-do-frontend
-```
+No Render ou em qualquer outro provedor, configure as variáveis de ambiente do backend seguindo o arquivo [`backend/.env.example`](backend/.env.example).
 
 ## Recuperação de Senha
 
