@@ -8,8 +8,9 @@
 
 .campo_config_periodo{
     display: none;
-    
+    width: 30vw;
     justify-content: center;
+    align-items: center;
     flex-direction: column;
     padding: 2vh 10vw;
     background-color: ghostwhite;
@@ -26,25 +27,26 @@
     display: flex;
     justify-content: center;
     flex-direction: column;
+    width: 40vw;
 }
 
 .periodo_container {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 1.5vh;
     margin-bottom: 20px;
 }
 
 .disciplinas_container {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 0.5vh;
 }
 
 .div_linha_periodo {
     display: grid;
     grid-template-columns: 2fr 1fr 2fr 40px;
-    gap: 8px;
+    gap: 0.5vw;
     align-items: center;
 }
 
@@ -189,4 +191,8 @@ button:hover{
 .botoes button{
     font-size: 20px;
     font-weight: 700;
+}
+
+.botao_remover_disciplina{
+    background-color: #dc3545;
 }

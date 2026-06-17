@@ -8,7 +8,7 @@
 
 .campo_config_curso{
     display: flex;
-    
+    width: 30vw;
     justify-content: center;
     flex-direction: column;
     padding: 1vw 10vw;
