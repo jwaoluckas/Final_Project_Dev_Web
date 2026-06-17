@@ -158,14 +158,46 @@ function criarCampoPrerequisito() {
     const campoPrerequisito = document.createElement('select');
     campoPrerequisito.className = 'escolha_prerequisito';
     campoPrerequisito.multiple = true;
-    campoPrerequisito.size = 1;
-    campoPrerequisito.title = 'Segure Ctrl para selecionar mais de um prerequisito';
+    campoPrerequisito.title = 'Selecione um ou mais prerequisitos';
+
+    const botaoPrerequisito = document.createElement('button');
+    botaoPrerequisito.type = 'button';
+    botaoPrerequisito.className = 'botao_prerequisito';
 
     const textoContagem = document.createElement('span');
     textoContagem.className = 'texto_contagem_prerequisito';
 
+    const iconeDropdown = document.createElement('span');
+    iconeDropdown.className = 'icone_prerequisito';
+    iconeDropdown.innerText = '▼';
+
+    const painelPrerequisito = document.createElement('div');
+    painelPrerequisito.className = 'painel_prerequisito';
+
+    botaoPrerequisito.appendChild(textoContagem);
+    botaoPrerequisito.appendChild(iconeDropdown);
+
+    botaoPrerequisito.addEventListener('click', (evento) => {
+        evento.preventDefault();
+        evento.stopPropagation();
+
+        const expandido = wrapperPrerequisito.classList.contains('expandido');
+        document.querySelectorAll('.wrapper_prerequisito.expandido').forEach(wrapper => {
+            if (wrapper !== wrapperPrerequisito) {
+                wrapper.classList.remove('expandido');
+            }
+        });
+
+        wrapperPrerequisito.classList.toggle('expandido', !expandido);
+    });
+
+    painelPrerequisito.addEventListener('click', (evento) => {
+        evento.stopPropagation();
+    });
+
     wrapperPrerequisito.appendChild(campoPrerequisito);
-    wrapperPrerequisito.appendChild(textoContagem);
+    wrapperPrerequisito.appendChild(botaoPrerequisito);
+    wrapperPrerequisito.appendChild(painelPrerequisito);
     campoPrerequisito.wrapperPrerequisito = wrapperPrerequisito;
     campoPrerequisito.addEventListener('change', () => atualizarTextoContagemPrerequisito(campoPrerequisito));
     atualizarTextoContagemPrerequisito(campoPrerequisito);
@@ -200,6 +232,48 @@ function atualizarTextoContagemPrerequisito(campoPrerequisito) {
     }
 
     campoPrerequisito.title = `${texto}. Segure Ctrl para selecionar mais de um pr\u00e9-requisito`;
+}
+
+function renderizarPainelPrerequisito(campoPrerequisito, linha) {
+    const wrapperPrerequisito = campoPrerequisito.closest('.wrapper_prerequisito');
+    const painelPrerequisito = wrapperPrerequisito?.querySelector('.painel_prerequisito');
+
+    if (!painelPrerequisito) {
+        return;
+    }
+
+    painelPrerequisito.innerHTML = '';
+    const grupos = Array.from(campoPrerequisito.querySelectorAll('optgroup'));
+
+    grupos.forEach(grupo => {
+        const tituloGrupo = document.createElement('div');
+        tituloGrupo.className = 'grupo_prerequisito_titulo';
+        tituloGrupo.innerText = grupo.label;
+        painelPrerequisito.appendChild(tituloGrupo);
+
+        Array.from(grupo.querySelectorAll('option')).forEach(option => {
+            const itemPrerequisito = document.createElement('label');
+            itemPrerequisito.className = 'item_prerequisito';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = option.selected;
+            checkbox.addEventListener('change', () => {
+                option.selected = checkbox.checked;
+                linha.dataset.prerequisitosSelecionados = JSON.stringify(
+                    Array.from(campoPrerequisito.selectedOptions).map(item => item.value)
+                );
+                campoPrerequisito.dispatchEvent(new Event('change'));
+            });
+
+            const textoItem = document.createElement('span');
+            textoItem.innerText = option.innerText;
+
+            itemPrerequisito.appendChild(checkbox);
+            itemPrerequisito.appendChild(textoItem);
+            painelPrerequisito.appendChild(itemPrerequisito);
+        });
+    });
 }
 
 function lerPrerequisitosSelecionados(linha, campoPrerequisito) {
@@ -257,6 +331,7 @@ function atualizarOpcoesPrerequisito(linha, numeroPeriodo) {
         campoPrerequisito.appendChild(optgroup);
     }
 
+    renderizarPainelPrerequisito(campoPrerequisito, linha);
     atualizarTextoContagemPrerequisito(campoPrerequisito);
 }
 
@@ -715,4 +790,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         preencherInformacoesCurso(ppc);
         preencherPeriodosEDisciplinas(ppc);
     }
+});
+
+document.addEventListener('click', () => {
+    document.querySelectorAll('.wrapper_prerequisito.expandido').forEach(wrapper => {
+        wrapper.classList.remove('expandido');
+    });
 });

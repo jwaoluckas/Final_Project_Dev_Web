@@ -99,24 +99,92 @@
 }
 
 .wrapper_prerequisito .escolha_prerequisito {
-    width: 100%;
-    box-sizing: border-box;
+    display: none;
 }
 
 .texto_contagem_prerequisito {
-    position: absolute;
-    top: 1px;
-    bottom: 1px;
-    left: 9px;
-    right: 28px;
     display: flex;
     align-items: center;
     overflow: hidden;
-    background-color: #f5f5f5;
-    color: #333;
     font-size: 14px;
     white-space: nowrap;
     pointer-events: none;
+}
+
+.botao_prerequisito {
+    width: 100%;
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px;
+    box-sizing: border-box;
+    background-color: transparent;
+    border: 1px solid #2F9E41;
+    border-radius: 4px;
+    color: #333;
+    font-size: 14px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+}
+
+.wrapper_prerequisito .botao_prerequisito:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.wrapper_prerequisito .botao_prerequisito:focus {
+    outline: none;
+    border-color: #2F9E41;
+    box-shadow: 0 0 4px rgba(47, 158, 65, 0.25);
+    background-color: white;
+}
+
+.icone_prerequisito {
+    flex-shrink: 0;
+    font-size: 11px;
+    color: #333;
+}
+
+.painel_prerequisito {
+    display: none;
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+    right: 0;
+    max-height: 180px;
+    overflow-y: auto;
+    background-color: #f5f5f5;
+    border: 1px solid #2F9E41;
+    border-radius: 4px;
+    z-index: 20;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.wrapper_prerequisito.expandido .painel_prerequisito {
+    display: block;
+}
+
+.grupo_prerequisito_titulo {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1f1f1f;
+    margin: 4px 0 6px;
+}
+
+.item_prerequisito {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #333;
+    margin-bottom: 6px;
+}
+
+.item_prerequisito input {
+    margin: 0;
 }
 
 .escolha_disciplina:focus,

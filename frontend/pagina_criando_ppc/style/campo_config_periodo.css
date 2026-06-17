@@ -64,24 +64,87 @@
 }
 
 .wrapper_prerequisito .escolha_prerequisito {
-    width: 100%;
-    box-sizing: border-box;
+    display: none;
 }
 
 .texto_contagem_prerequisito {
-    position: absolute;
-    top: 1px;
-    bottom: 1px;
-    left: 6px;
-    right: 24px;
     display: flex;
     align-items: center;
     overflow: hidden;
-    background-color: ghostwhite;
-    color: #333;
     font-size: 13px;
     white-space: nowrap;
     pointer-events: none;
+}
+
+.botao_prerequisito {
+    width: 100%;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px 8px;
+    box-sizing: border-box;
+    background-color: transparent;
+    border: #2F9E41 solid 1px;
+    border-radius: 2.5px;
+    color: #333;
+    font-weight: 400;
+}
+
+.wrapper_prerequisito .botao_prerequisito:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.wrapper_prerequisito .botao_prerequisito:focus {
+    outline: none;
+}
+
+.icone_prerequisito {
+    flex-shrink: 0;
+    font-size: 11px;
+    color: #333;
+}
+
+.painel_prerequisito {
+    display: none;
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+    right: 0;
+    max-height: 180px;
+    overflow-y: auto;
+    background-color: ghostwhite;
+    border: 1px solid #2F9E41;
+    border-radius: 2.5px;
+    z-index: 20;
+    padding: 6px 8px;
+    box-sizing: border-box;
+}
+
+.wrapper_prerequisito.expandido .painel_prerequisito {
+    display: block;
+}
+
+.grupo_prerequisito_titulo {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1f1f1f;
+    margin: 4px 0;
+}
+
+.item_prerequisito {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.item_prerequisito input {
+    margin: 0;
 }
 
 .campo_config_periodo div[class^="periodo_"] label{
